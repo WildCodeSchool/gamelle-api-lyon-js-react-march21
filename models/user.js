@@ -9,11 +9,11 @@ const findByEmail = (email) => {
 };
 // ---------Creation d'une fonction pour comparer le numero avec un numero déjà existant--------- //
 const phoneAlreadyExist = (phone) => {
-  return db.user.findFirst({ where: { phone } }).then((user) => !!user)
+  return db.user.findFirst({ where: { phone } }).then((User) => !!User)
 }
 // ---------Creation d'une fonction comparer le mail avec un mail déjà existant--------- //
 const emailAlreadyExists = (email) => {
-  return db.user.findFirst({ where: { email } }).then((user) => !!user)
+  return db.user.findFirst({ where: { email } }).then((User) => !!User)
 };
 // ---------Option de hachage du mdp--------- //
 const hashingOptions = {
