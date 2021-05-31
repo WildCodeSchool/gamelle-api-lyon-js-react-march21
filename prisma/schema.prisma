@@ -10,11 +10,109 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model user {
-  id             Int    @id @default(autoincrement())
-  firstname      String @db.VarChar(255)
-  lastname       String @db.VarChar(255)
-  phone          String @unique @db.VarChar(20)
-  email          String @unique @db.VarChar(255)
-  hashedPassword String @db.VarChar(255)
+model User {
+  id             Int        @id @default(autoincrement())
+  firstname      String     @db.VarChar(255)
+  lastname       String     @db.VarChar(255)
+  phone          String?    @unique @db.VarChar(20)
+  email          String     @unique @db.VarChar(255)
+  hashedPassword String     @db.VarChar(255)
+  Animal         Animal[]
+  History        History[]
+  Favorite       Favorite[]
+}
+
+model AnimalCategory {
+  id                 Int      @id @default(autoincrement())
+  animalCategoryName String   @unique @db.VarChar(255)
+  Food               Food[]
+  Animal             Animal[]
+}
+
+model Breed {
+  id        Int      @id @default(autoincrement())
+  breedName String   @unique @db.VarChar(255)
+  Animal    Animal[]
+}
+
+model Brand {
+  id        Int    @id @default(autoincrement())
+  brandName String @unique @db.VarChar(255)
+  Food      Food[]
+}
+
+model FoodType {
+  id           Int    @id @default(autoincrement())
+  foodTypeName String @unique @db.VarChar(255)
+  Food         Food[]
+}
+
+model Food {
+  id                 Int                 @id @default(autoincrement())
+  brandId            Int?
+  Brand              Brand?              @relation(fields: [brandId], references: [id])
+  foodName           String              @unique @db.VarChar(255)
+  foodTypeId         Int?
+  FoodTypeName       FoodType?           @relation(fields: [foodTypeId], references: [id])
+  animalCategoryId   Int?
+  AnimalCategory     AnimalCategory?     @relation(fields: [animalCategoryId], references: [id])
+  image              String?             @db.VarChar(255)
+  amazonPrice        Decimal?            @db.Decimal(10, 2)
+  zooplusPrice       Decimal?            @db.Decimal(10, 2)
+  croquettelandPrice Decimal?            @db.Decimal(10, 2)
+  priceTimeStamp     DateTime?
+  History            History[]
+  Favorite           Favorite[]
+  AnimalCurrentFood  AnimalCurrentFood[]
+}
+
+model Animal {
+  id                 Int                  @id @default(autoincrement())
+  name               String               @unique @db.VarChar(255)
+  image              String?              @db.VarChar(255)
+  userId             Int
+  Owner              User                 @relation(fields: [userId], references: [id])
+  animalCategoryId   Int?
+  AnimalCategory     AnimalCategory?      @relation(fields: [animalCategoryId], references: [id])
+  breedId            Int?
+  BreedOfAnimal      Breed?               @relation(fields: [breedId], references: [id])
+  AnimalFavoriteFood AnimalFavoriteFood[]
+  AnimalCurrentFood  AnimalCurrentFood[]
+}
+
+model Favorite {
+  id                 Int                  @id @default(autoincrement())
+  userId             Int
+  User               User                 @relation(fields: [userId], references: [id])
+  foodId             Int
+  FoodHistory        Food                 @relation(fields: [foodId], references: [id])
+  History            History[]
+  AnimalFavoriteFood AnimalFavoriteFood[]
+}
+
+model History {
+  id             Int       @id @default(autoincrement())
+  priceTimeStamp DateTime
+  userId         Int
+  User           User      @relation(fields: [userId], references: [id])
+  foodId         Int
+  FoodHistory    Food      @relation(fields: [foodId], references: [id])
+  favoriteId     Int?
+  Favorites      Favorite? @relation(fields: [favoriteId], references: [id])
+}
+
+model AnimalFavoriteFood {
+  id         Int      @id @default(autoincrement())
+  animalId   Int
+  Animal     Animal   @relation(fields: [animalId], references: [id])
+  favoriteId Int
+  Favorites  Favorite @relation(fields: [favoriteId], references: [id])
+}
+
+model AnimalCurrentFood {
+  id       Int    @id @default(autoincrement())
+  animalId Int
+  Animal   Animal @relation(fields: [animalId], references: [id])
+  foodId   Int
+  Food     Food   @relation(fields: [foodId], references: [id])
 }
