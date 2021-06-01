@@ -1,9 +1,24 @@
 // const axios = require('axios');
 const express = require('express');
-const { inTestEnv, PORT } = require('./env');
+const cors = require('cors');
+const { CORS_ALLOWED_ORIGINS, inTestEnv, PORT } = require('./env');
 
 const app = express();
 app.set('x-powered-by', false);
+
+const allowedOrigins = CORS_ALLOWED_ORIGINS.split(',');
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (origin === undefined || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 
