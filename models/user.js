@@ -39,7 +39,7 @@ const validate = (data) =>
   Joi.object({
     firstname: Joi.string().min(1).max(255).required(),
     lastname: Joi.string().min(1).max(255).required(),
-    phone: JoiPhoneNumber.string().phoneNumber().min(10).max(20).required(),
+    phone: JoiPhoneNumber.string().phoneNumber().min(10).max(20).allow(null, '').optional(),
     email: Joi.string().email().max(255).required(),
     password: Joi.string().min(8).required(),
   }).validate(data, { abortEarly: false }).error;
