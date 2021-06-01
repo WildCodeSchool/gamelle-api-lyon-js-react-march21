@@ -1,7 +1,8 @@
-// const axios = require('axios');
+const axios = require('axios');
 const express = require('express');
 const cors = require('cors');
 const { CORS_ALLOWED_ORIGINS, inTestEnv, PORT } = require('./env');
+const db = require('./db');
 
 const app = express();
 app.set('x-powered-by', false);
@@ -24,7 +25,7 @@ app.use(express.json());
 
 require('./routes')(app);
 
-// const delayInMilliseconds = 60 * 60 * 1000;
+const delayInMilliseconds = 60 * 60 * 1000;
 
 // server setup
 const server = app.listen(PORT, () => {
@@ -34,41 +35,41 @@ const server = app.listen(PORT, () => {
 });
 
 /* ********************** Connection & request to API periodically ********************** */
-// const gamelleBreedsRequest = () => {
-//   const firstRequest = connection
-//     .promise()
-//     .query(
-//       'SELECT ingredients_id AS id, ingredients_ingr AS ingr FROM ingredients'
-//     )
-//     .catch((err) => {
-//       console.log(err);
-//     });
+const gamelleBreedsRequest = async () => {
+  const firstRequest = await db.breed.findMany();
 
-//   firstRequest
-//     .then((reqresult) => {
-//       const listOfIngredients = Object.values(
-//         JSON.parse(JSON.stringify(reqresult[0]))
-//       );
-//       listOfIngredients.forEach((ingredient) =>
-//         axios
-//           .get(`https://gamelle-manager-staging.herokuapp.com/api`)
-//           .then((response) => response.data)
-//           .then((data) => {
-//             connection
-//               .promise()
-//               .query(
-//                 `UPDATE Food SET ingredients_kcal100 = ? WHERE ingredients_id = ?;`,
-//                 [data.parsed[0].food.nutrients.ENERC_KCAL, ingredient.id]
-//               );
-//           })
-//       );
-//     })
-//     .catch((err) => console.log(err));
-//   console.log(`Request to API done at ${new Date().toLocaleString()}`);
-// };
+  await axios
+    .get(`https://gamelle-manager-staging.herokuapp.com/api/breeds`)
+    .then((response) => response.data)
+    .then((data) => {
+      data.data.forEach(async (breed) => {
+        const breedAlreadyExists = firstRequest.filter(
+          (item) => item.gamelleId === breed.id
+        );
 
-// edamamRequest();
-// setInterval(edamamRequest, delayInMilliseconds);
+        if (breedAlreadyExists.length > 0) {
+          await db.breed.update({
+            where: { gamelleId: breed.id },
+            data: {
+              breedName: breed.name,
+              speciesId: breed.specie_id,
+            },
+          });
+        } else {
+          await db.breed.create({
+            data: {
+              breedName: breed.name,
+              gamelleId: breed.id,
+              speciesId: breed.specie_id,
+            },
+          });
+        }
+      });
+    });
+};
+
+gamelleBreedsRequest();
+setInterval(gamelleBreedsRequest, delayInMilliseconds);
 
 // process setup
 process.on('unhandledRejection', (error) => {
