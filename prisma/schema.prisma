@@ -17,16 +17,16 @@ model User {
   phone          String?    @db.VarChar(20)
   email          String     @unique @db.VarChar(255)
   hashedPassword String     @db.VarChar(255)
-  Animal         Animal[]
+  Animals        Animal[]
   History        History[]
-  Favorite       Favorite[]
+  Favorites      Favorite[]
 }
 
 model AnimalCategory {
-  id     Int      @id @default(autoincrement())
-  name   String   @unique @db.VarChar(255)
-  Food   Food[]
-  Animal Animal[]
+  id      Int      @id @default(autoincrement())
+  name    String   @unique @db.VarChar(255)
+  Foods   Food[]
+  Animals Animal[]
 }
 
 model Breed {
@@ -34,13 +34,13 @@ model Breed {
   name      String   @unique @db.VarChar(255)
   gamelleId Int      @unique
   speciesId Int
-  Animal    Animal[]
+  Animals   Animal[]
 }
 
 model FoodType {
-  id   Int    @id @default(autoincrement())
-  name String @unique @db.VarChar(255)
-  Food Food[]
+  id    Int    @id @default(autoincrement())
+  name  String @unique @db.VarChar(255)
+  Foods Food[]
 }
 
 model Food {
@@ -49,9 +49,9 @@ model Food {
   brand                           String?             @db.VarChar(255)
   name                            String?             @db.VarChar(255)
   foodTypeId                      Int?
-  FoodType                        FoodType?           @relation(fields: [foodTypeId], references: [id])
+  FoodTypes                       FoodType?           @relation(fields: [foodTypeId], references: [id])
   animalCategoryId                Int?
-  AnimalCategory                  AnimalCategory?     @relation(fields: [animalCategoryId], references: [id])
+  AnimalCategories                AnimalCategory?     @relation(fields: [animalCategoryId], references: [id])
   image                           String?             @db.VarChar(255)
   amazonPrice                     Decimal?            @db.Decimal(10, 2)
   zooplusPrice                    Decimal?            @db.Decimal(10, 2)
@@ -60,41 +60,41 @@ model Food {
   zooplusLastpriceTimeStamp       DateTime?
   croquettelandLastpriceTimeStamp DateTime?
   History                         History[]
-  Favorite                        Favorite[]
-  AnimalCurrentFood               AnimalCurrentFood[]
+  Favorites                       Favorite[]
+  AnimalCurrentFoods              AnimalCurrentFood[]
 }
 
 model Animal {
-  id                 Int                  @id @default(autoincrement())
-  name               String               @unique @db.VarChar(255)
-  image              String?              @db.VarChar(255)
-  ownerId            Int
-  Owner              User                 @relation(fields: [ownerId], references: [id])
-  animalCategoryId   Int?
-  AnimalCategory     AnimalCategory?      @relation(fields: [animalCategoryId], references: [id])
-  breedId            Int?
-  Breed              Breed?               @relation(fields: [breedId], references: [id])
-  AnimalFavoriteFood AnimalFavoriteFood[]
-  AnimalCurrentFood  AnimalCurrentFood[]
+  id                  Int                  @id @default(autoincrement())
+  name                String               @unique @db.VarChar(255)
+  image               String?              @db.VarChar(255)
+  ownerId             Int
+  Owners              User                 @relation(fields: [ownerId], references: [id])
+  animalCategoryId    Int?
+  AnimalCategories    AnimalCategory?      @relation(fields: [animalCategoryId], references: [id])
+  breedId             Int?
+  Breeds              Breed?               @relation(fields: [breedId], references: [id])
+  AnimalFavoriteFoods AnimalFavoriteFood[]
+  AnimalCurrentFoods  AnimalCurrentFood[]
 }
 
 model Favorite {
-  id                 Int                  @id @default(autoincrement())
-  userId             Int
-  User               User                 @relation(fields: [userId], references: [id])
-  foodId             Int
-  FoodHistory        Food                 @relation(fields: [foodId], references: [id])
-  History            History[]
-  AnimalFavoriteFood AnimalFavoriteFood[]
+  id                  Int                  @id @default(autoincrement())
+  userId              Int
+  Users               User                 @relation(fields: [userId], references: [id])
+  foodId              Int
+  FoodHistory         Food                 @relation(fields: [foodId], references: [id])
+  History             History[]
+  AnimalFavoriteFoods AnimalFavoriteFood[]
 }
 
 model History {
   id          Int       @id @default(autoincrement())
   consultedAt DateTime
   userId      Int
-  User        User      @relation(fields: [userId], references: [id])
+  Users       User      @relation(fields: [userId], references: [id])
   foodId      Int
-  Food        Food      @relation(fields: [foodId], references: [id])
+  Foods       Food      @relation(fields: [foodId], references: [id])
   favoriteId  Int?
   Favorites   Favorite? @relation(fields: [favoriteId], references: [id])
 }
@@ -102,7 +102,7 @@ model History {
 model AnimalFavoriteFood {
   id         Int      @id @default(autoincrement())
   animalId   Int
-  Animal     Animal   @relation(fields: [animalId], references: [id])
+  Animals    Animal   @relation(fields: [animalId], references: [id])
   favoriteId Int
   Favorites  Favorite @relation(fields: [favoriteId], references: [id])
 }
@@ -110,7 +110,7 @@ model AnimalFavoriteFood {
 model AnimalCurrentFood {
   id       Int    @id @default(autoincrement())
   animalId Int
-  Animal   Animal @relation(fields: [animalId], references: [id])
+  Animals  Animal @relation(fields: [animalId], references: [id])
   foodId   Int
-  Food     Food   @relation(fields: [foodId], references: [id])
+  Foods    Food   @relation(fields: [foodId], references: [id])
 }
