@@ -1,5 +1,14 @@
 const db = require('../db');
 
+const findBrands = () => {
+  return db.food.findMany({
+    distinct: ['brand'],
+    select: {
+      brand: true,
+    },
+  });
+};
+
 const findProducts = async (
   brandName,
   foodTypeName,
@@ -37,4 +46,4 @@ const findProducts = async (
   });
 };
 
-module.exports = { findProducts };
+module.exports = { findProducts, findBrands };

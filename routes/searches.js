@@ -1,6 +1,10 @@
 const searchesRouter = require('express').Router();
 const Search = require('../models/search');
 
+searchesRouter.get('/', () => {
+  Search.findBrands();
+});
+
 searchesRouter.post('/', (req, res) => {
   const { brandName, foodTypeName, animalCategoryName, searchedWords } =
     req.body;
