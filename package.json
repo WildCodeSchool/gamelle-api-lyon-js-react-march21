@@ -10,7 +10,8 @@
     "start:watch": "npm-run-all start:server:watch",
     "dev": "npm-run-all setup-db start:watch",
     "test": "NODE_ENV=test jest --testRunner='jest-circus/runner' --maxWorkers=1",
-    "lint": "eslint --fix ."
+    "lint": "eslint --fix .",
+    "ts-node": "ts-node --compiler-options '{\"module\": \"commonjs\"}'"
   },
   "husky": {
     "hooks": {
@@ -46,7 +47,9 @@
     "lodash": "^4.17.20",
     "mysql2": "^2.2.5",
     "npm-run-all": "^4.1.5",
-    "prisma": "2.23.0"
+    "prisma": "2.23.0",
+    "ts-node": "^10.0.0",
+    "typescript": "^4.3.2"
   },
   "devDependencies": {
     "eslint": "^7.14.0",
