@@ -6,6 +6,8 @@ const findProducts = async (
   animalCategoryName,
   searchedWords
 ) => {
+  console.log(brandName, foodTypeName, animalCategoryName, searchedWords);
+
   const brandId = await db.brand.findFirst({ where: { brandName } }).id;
   const animalCategoryId = await db.animalCategory.findFirst({
     where: { animalCategoryName },

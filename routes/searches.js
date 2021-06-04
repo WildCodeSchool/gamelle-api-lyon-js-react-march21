@@ -1,14 +1,16 @@
 const searchesRouter = require('express').Router();
 const Search = require('../models/search');
 
-searchesRouter.get('/', async (req, res) => {
+searchesRouter.post('/', (req, res) => {
   const { brandName, foodTypeName, animalCategoryName, searchedWords } =
     req.body;
   console.log('Arrivé dans searches.js');
+
   return Search.findProducts({
     filters: { brandName, foodTypeName, animalCategoryName, searchedWords },
   })
     .then((products) => {
+      console.log(products);
       res.json(products);
     })
     .catch((err) => {
