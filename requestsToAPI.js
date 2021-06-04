@@ -1,5 +1,6 @@
 const axios = require('axios');
 const db = require('./db');
+const { API_URL } = require('./env');
 
 const delayInMilliseconds = 60 * 60 * 1000;
 
@@ -8,7 +9,7 @@ const gamelleBreedsRequest = async () => {
   const firstRequest = await db.breed.findMany();
 
   await axios
-    .get(`https://gamelle-manager-staging.herokuapp.com/api/breeds`)
+    .get(`${API_URL}/breeds`)
     .then((response) => response.data)
     .then((data) => {
       data.data.forEach(async (breed) => {
@@ -48,14 +49,11 @@ const gamelleFoodRequest = async () => {
   const firstRequest = await db.food.findMany();
 
   await axios
-    .get(
-      `https://gamelle-manager-staging.herokuapp.com/api/products/main/?limit=10`,
-      {
-        params: {
-          limit: 10,
-        },
-      }
-    )
+    .get(`${API_URL}/products/main/?limit=10`, {
+      params: {
+        limit: 10,
+      },
+    })
     .then((response) => response.data)
     .then((data) => {
       data.forEach(async (food) => {
@@ -66,17 +64,11 @@ const gamelleFoodRequest = async () => {
         const { nom, marque, especes, type } = food;
         let WGFoodTypeId = null;
         let WGCategoryId = null;
-        // console.log(food);
-        // console.log('nom   ', nom);
-        // console.log('marque   ', marque);
-        // console.log('especes   ', especes);
 
         if (type) {
-          // console.log('type   ', type);
           const WGFoodType = await db.foodType.findFirst({
             where: { name: type },
           });
-          // console.log('WGFoodType   ', WGFoodType);
           WGFoodTypeId = WGFoodType ? WGFoodType.id : null;
         }
 
@@ -86,9 +78,6 @@ const gamelleFoodRequest = async () => {
           });
           WGCategoryId = WGCategory ? WGCategory.id : null;
         }
-
-        // console.log('WGCategory   ', WGCategoryId);
-        // console.log('WGFoodType   ', WGFoodTypeId);
 
         if (foodAlreadyExists.length > 0) {
           await db.food.update({

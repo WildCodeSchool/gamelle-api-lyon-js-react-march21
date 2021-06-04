@@ -14,6 +14,7 @@ const inTestEnv = getEnv('NODE_ENV') === 'test';
 
 const PORT = getEnv(`PORT${inTestEnv ? '_TEST' : ''}`);
 const DATABASE_URL = getEnv(`DATABASE_URL`);
+const API_URL = getEnv(`API_URL`);
 
 const dbUrlregex =
   /* eslint-disable */
@@ -46,4 +47,5 @@ module.exports = {
   DB_PASSWORD,
   DB_NAME,
   DB_PORT,
+  API_URL,
 };
