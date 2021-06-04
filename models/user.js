@@ -21,6 +21,12 @@ const hashingOptions = {
   timeCost: 5,
   type: argon2.argon2id,
 };
+
+// ---------Creation d'une fonction pour trouver un utilisateur par son id unique--------- //
+const findOne = (id) => db.user.findUnique({ where: { id } });
+
+const { findMany } = db.user;
+
 // ---------Creation d'une fonction pour hacher le mdp--------- //
 const hashPassword = (plainPassword) => {
   return argon2.hash(plainPassword, hashingOptions)
@@ -51,5 +57,7 @@ module.exports = {
   hashPassword,
   create,
   verifyPassword,
-  validate
+  validate,
+  findOne,
+  findMany,
 };
