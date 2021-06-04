@@ -11,7 +11,6 @@ const gamelleBreedsRequest = async () => {
     .get(`https://gamelle-manager-staging.herokuapp.com/api/breeds`)
     .then((response) => response.data)
     .then((data) => {
-      console.log(data);
       data.data.forEach(async (breed) => {
         const breedAlreadyExists = firstRequest.filter(
           (item) => item.gamelleId === breed.id
@@ -45,64 +44,85 @@ setInterval(gamelleBreedsRequest, delayInMilliseconds);
 /* ********************** End of table Breed update ********************** */
 
 /* ********************** Connection & request to API periodically : Table Food ********************** */
-// const gamelleFoodRequest = async () => {
-//   const firstRequest = await db.food.findMany();
+const gamelleFoodRequest = async () => {
+  const firstRequest = await db.food.findMany();
 
-//   await axios
-//     .get(`https://gamelle-manager-staging.herokuapp.com/api/products/main`)
-//     .then((response) => response.data)
-//     .then((data) => {
-//       console.log(data);
-//       data.forEach(async (food) => {
-//         const foodAlreadyExists = firstRequest.filter(
-//           (item) => item.gamelleId === food.id
-//         );
+  await axios
+    .get(
+      `https://gamelle-manager-staging.herokuapp.com/api/products/main/?limit=10`,
+      {
+        params: {
+          limit: 10,
+        },
+      }
+    )
+    .then((response) => response.data)
+    .then((data) => {
+      data.forEach(async (food) => {
+        const foodAlreadyExists = firstRequest.filter(
+          (item) => item.gamelleId === food.id
+        );
 
-//         const { nom, marque, especes, type } = food;
-//         const WGFoodType = await db.foodType.findFirst({ where: { type } });
-//         const WGCategory = await db.animalCategory.findFirst({
-//           where: { especes },
-//         });
-//         console.log(food);
-//         console.log(foodAlreadyExists);
-//         console.log(WGCategory);
-//         console.log(WGFoodType);
-//         console.log(nom);
-//         console.log(marque);
+        const { nom, marque, especes, type } = food;
+        let WGFoodTypeId = null;
+        let WGCategoryId = null;
+        // console.log(food);
+        // console.log('nom   ', nom);
+        // console.log('marque   ', marque);
+        // console.log('especes   ', especes);
 
-//         // if (foodAlreadyExists.length > 0) {
-//         //   await db.breed.update({
-//         //     where: { gamelleId: food.id },
-//         //     data: {
-//         //       name: nom,
-//         //       brand: marque,
-//         //       foodTypeId: WGFoodType.id,
-//         //       animalCategoryId: WGCategory.id,
-//         //       image: food.image.replace(/\\/g, ''),
-//         //     },
-//         //   });
-//         // } else {
-//         //   await db.breed.create({
-//         //     data: {
-//         //       gamelleId: food.id,
-//         //       name: nom,
-//         //       brand: marque,
-//         //       foodTypeId: WGFoodType.id,
-//         //       animalCategoryId: WGCategory.id,
-//         //       image: food.image.replace(/\\/g, ''),
-//         //     },
-//         //   });
-//         // }
-//       });
-//     });
-//   console.log(`Table 'Food' updated at ${new Date()}`);
-// };
+        if (type) {
+          // console.log('type   ', type);
+          const WGFoodType = await db.foodType.findFirst({
+            where: { name: type },
+          });
+          // console.log('WGFoodType   ', WGFoodType);
+          WGFoodTypeId = WGFoodType ? WGFoodType.id : null;
+        }
 
-// gamelleFoodRequest();
-// setInterval(gamelleFoodRequest, delayInMilliseconds);
+        if (especes) {
+          const WGCategory = await db.animalCategory.findFirst({
+            where: { name: especes },
+          });
+          WGCategoryId = WGCategory ? WGCategory.id : null;
+        }
+
+        // console.log('WGCategory   ', WGCategoryId);
+        // console.log('WGFoodType   ', WGFoodTypeId);
+
+        if (foodAlreadyExists.length > 0) {
+          await db.food.update({
+            where: { gamelleId: food.id },
+            data: {
+              name: nom,
+              brand: marque,
+              foodTypeId: WGFoodTypeId,
+              animalCategoryId: WGCategoryId,
+              image: food.image.replace(/\\/g, ''),
+            },
+          });
+        } else {
+          await db.food.create({
+            data: {
+              gamelleId: food.id,
+              name: nom,
+              brand: marque,
+              foodTypeId: WGFoodTypeId,
+              animalCategoryId: WGCategoryId,
+              image: food.image.replace(/\\/g, ''),
+            },
+          });
+        }
+      });
+    });
+  console.log(`Table 'Food' updated at ${new Date()}`);
+};
+
+gamelleFoodRequest();
+setInterval(gamelleFoodRequest, delayInMilliseconds);
 /* ********************** End of table Food update ********************** */
 
 module.exports = {
   gamelleBreedsRequest,
-  //   gamelleFoodRequest,
+  gamelleFoodRequest,
 };

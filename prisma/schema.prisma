@@ -32,6 +32,7 @@ model AnimalCategory {
 model Breed {
   id        Int      @id @default(autoincrement())
   name      String   @unique @db.VarChar(255)
+  gamelleId Int      @unique
   speciesId Int
   Animal    Animal[]
 }
@@ -44,8 +45,9 @@ model FoodType {
 
 model Food {
   id                              Int                 @id @default(autoincrement())
-  brand                           String              @db.VarChar(255)
-  name                            String              @db.VarChar(255)
+  gamelleId                       Int                 @unique
+  brand                           String?             @db.VarChar(255)
+  name                            String?             @db.VarChar(255)
   foodTypeId                      Int?
   FoodType                        FoodType?           @relation(fields: [foodTypeId], references: [id])
   animalCategoryId                Int?
