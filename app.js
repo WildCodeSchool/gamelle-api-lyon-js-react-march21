@@ -1,10 +1,26 @@
 const express = require('express');
 const cors = require('cors');
-const { CORS_ALLOWED_ORIGINS, inTestEnv, PORT } = require('./env');
+const session = require('express-session');
 const requestsToAPI = require('./requestsToAPI');
 
+const {
+  PORT,
+  CORS_ALLOWED_ORIGINS,
+  inTestEnv,
+  inProdEnv,
+  SESSION_COOKIE_SECRET,
+  SESSION_COOKIE_NAME,
+  SESSION_COOKIE_DOMAIN,
+} = require('./env');
+
+const sessionStore = require('./sessionStore');
+
 const app = express();
+
 app.set('x-powered-by', false);
+app.set('trust proxy', 1);
+
+app.use(express.json());
 
 const allowedOrigins = CORS_ALLOWED_ORIGINS.split(',');
 const corsOptions = {
@@ -20,7 +36,20 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.use(express.json());
+app.use(
+  session({
+    key: SESSION_COOKIE_NAME,
+    secret: SESSION_COOKIE_SECRET,
+    store: sessionStore,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: inProdEnv,
+      domain: SESSION_COOKIE_DOMAIN,
+      sameSite: true,
+    },
+  })
+);
 
 require('./routes')(app);
 
