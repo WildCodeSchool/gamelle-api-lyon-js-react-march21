@@ -2,43 +2,76 @@ const db = require('../db');
 
 const findBrands = () => {
   return db.food.findMany({
+    // take: 10,
     distinct: ['brand'],
+    orderBy: [
+      {
+        brand: 'asc',
+      },
+    ],
     select: {
       brand: true,
+    },
+    where: {
+      NOT: {
+        brand: {
+          equals: '',
+        },
+      },
     },
   });
 };
 
-const findProducts = async (
-  brandName,
-  foodTypeName,
-  animalCategoryName,
-  searchedWords
-) => {
-  console.log(brandName, foodTypeName, animalCategoryName, searchedWords);
+const findTypes = () => {
+  return db.foodType.findMany({
+    distinct: ['name'],
+    orderBy: [
+      {
+        name: 'asc',
+      },
+    ],
+  });
+};
 
-  const brandId = await db.brand.findFirst({ where: { brandName } }).id;
-  const animalCategoryId = await db.animalCategory.findFirst({
-    where: { animalCategoryName },
-  }).id;
-  const foodTypeId = await db.foodType.findFirst({ where: { foodTypeName } })
-    .id;
+const findAnimalCategories = () => {
+  return db.animalCategory.findMany({
+    distinct: ['name'],
+    orderBy: [
+      {
+        name: 'asc',
+      },
+    ],
+  });
+};
 
-  const words = searchedWords.split(' ');
+const findProducts = async ({
+  filters: { brand, foodTypeName, animalCategoryName, searchedWords },
+}) => {
+  const animalCategoryResult = await db.animalCategory.findFirst({
+    where: { name: animalCategoryName },
+  });
+  const animalCategoryId = animalCategoryResult.id;
+
+  const foodTypeResult = await db.foodType.findFirst({
+    where: { name: foodTypeName },
+  });
+  const foodTypeId = foodTypeResult.id;
+
+  const words = searchedWords ? searchedWords.split(' ') : '';
   const searchTextArray = [];
-
-  words.filter(Boolean).forEach((word) => {
-    searchTextArray.push(`{
+  if (words !== '')
+    words.filter(Boolean).forEach((word) => {
+      searchTextArray.push(`{
     foodName: {
       contains: ${word.trim()}',
       mode: 'insensitive',
     },
   }`);
-  });
+    });
 
   return db.food.findMany({
     where: {
-      brandId,
+      brand,
       animalCategoryId,
       foodTypeId,
       AND: searchTextArray,
@@ -46,4 +79,4 @@ const findProducts = async (
   });
 };
 
-module.exports = { findProducts, findBrands };
+module.exports = { findProducts, findBrands, findTypes, findAnimalCategories };
