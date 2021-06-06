@@ -50,33 +50,31 @@ const findProducts = async ({
   const animalCategoryResult = await db.animalCategory.findFirst({
     where: { name: animalCategoryName },
   });
-  const animalCategoryId = animalCategoryResult.id;
+  const animalcategorySQL = animalCategoryResult
+    ? `AND animalCategoryId=${animalCategoryResult.id}`
+    : '';
 
   const foodTypeResult = await db.foodType.findFirst({
     where: { name: foodTypeName },
   });
-  const foodTypeId = foodTypeResult.id;
+  const foodTypeSQL = foodTypeResult
+    ? `AND foodTypeId=${foodTypeResult.id}`
+    : '';
 
-  const words = searchedWords ? searchedWords.split(' ') : '';
-  const searchTextArray = [];
-  if (words !== '')
+  const words = searchedWords
+    ? searchedWords.split(' ').filter((word) => word !== '')
+    : [];
+
+  let searchText = '';
+
+  if (words !== [])
     words.filter(Boolean).forEach((word) => {
-      searchTextArray.push(`{
-    foodName: {
-      contains: ${word.trim()}',
-      mode: 'insensitive',
-    },
-  }`);
+      searchText += `AND name LIKE '%${word.trim()}%'`;
     });
 
-  return db.food.findMany({
-    where: {
-      brand,
-      animalCategoryId,
-      foodTypeId,
-      AND: searchTextArray,
-    },
-  });
+  return db.$queryRaw(
+    `SELECT * FROM Food WHERE brand='${brand}' ${animalcategorySQL} ${foodTypeSQL} ${searchText}`
+  );
 };
 
 module.exports = { findProducts, findBrands, findTypes, findAnimalCategories };

@@ -53,7 +53,6 @@ searchesRouter.post('/', (req, res) => {
     filters: { brand, foodTypeName, animalCategoryName, searchedWords },
   })
     .then((products) => {
-      console.log(products);
       res.json(products);
     })
     .catch((err) => {
