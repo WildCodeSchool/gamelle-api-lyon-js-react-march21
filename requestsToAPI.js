@@ -49,18 +49,18 @@ const gamelleFoodRequest = async () => {
   const firstRequest = await db.food.findMany();
 
   await axios
-    .get(`${API_URL}/products/main/?limit=10`, {
+    .get(`${API_URL}/products/main/`, {
       params: {
-        limit: 10,
+        _limit: 10,
       },
     })
     .then((response) => response.data)
     .then((data) => {
+      console.log(data.length);
       data.forEach(async (food) => {
         const foodAlreadyExists = firstRequest.filter(
           (item) => item.gamelleId === food.id
         );
-
         const { nom, marque, especes, type } = food;
         let WGFoodTypeId = null;
         let WGCategoryId = null;
