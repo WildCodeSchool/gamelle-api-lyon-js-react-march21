@@ -1,13 +1,13 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider = "prisma-client-js"
 }
 
 model User {
@@ -17,6 +17,8 @@ model User {
   phone          String?    @db.VarChar(20)
   email          String     @unique @db.VarChar(255)
   hashedPassword String     @db.VarChar(255)
+  role           String     @default("user") @db.VarChar(255)
+  avatarUrl      String?    @db.VarChar(255)
   Animals        Animal[]
   History        History[]
   Favorites      Favorite[]
@@ -113,4 +115,10 @@ model AnimalCurrentFood {
   Animals  Animal @relation(fields: [animalId], references: [id])
   foodId   Int
   Foods    Food   @relation(fields: [foodId], references: [id])
+}
+
+model sessions {
+  session_id String  @id @db.VarChar(128)
+  expires    Int     @db.UnsignedInt
+  data       String? @db.MediumText
 }
