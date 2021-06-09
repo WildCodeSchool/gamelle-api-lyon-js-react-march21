@@ -2,7 +2,7 @@ const argon2 = require('argon2');
 const Joi = require('joi');
 const JoiPhoneNumber = Joi.extend(require('joi-phone-number'));
 const db = require('../db');
-const { API_URL } = require('../env')
+const { API_BACK } = require('../env')
 
 // ---------Creation d'une fonction pour trouver un utilisateur par son email--------- //
 const findByEmail = (email) => {
@@ -57,7 +57,7 @@ const update = async (id, data) =>
       ...data,
       avatarUrl:
         typeof data.avatarUrl === 'string'
-          ? data.avatarUrl.replace(`${API_URL}/`, '')
+          ? data.avatarUrl.replace(`${API_BACK}/`, '')
           : null,
     },
   });
@@ -83,7 +83,7 @@ const getSafeAttributes = (user) => {
   if (avatarUrl && !avatarUrl.startsWith('http://') &&
     !avatarUrl.startsWith('https://')
   ) {
-    avatarUrl = `${API_URL}/${avatarUrl}`;
+    avatarUrl = `${API_BACK}/${avatarUrl}`;
   }
   return {
     ...user,
