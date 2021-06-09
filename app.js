@@ -51,6 +51,8 @@ app.use(
   })
 );
 
+app.use('/file-storage', express.static('file-storage'));
+
 require('./routes')(app);
 
 // server setup
