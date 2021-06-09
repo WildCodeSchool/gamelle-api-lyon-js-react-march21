@@ -92,6 +92,11 @@ const getSafeAttributes = (user) => {
   };
 };
 
+const destroy = (id) =>
+  db.user.delete({ where: { id: parseInt(id, 10) } })
+    .then(() => true)
+    .catch(() => false);
+
 module.exports = {
   findByEmail,
   emailAlreadyExists,
@@ -103,5 +108,6 @@ module.exports = {
   findOne,
   findMany,
   update,
-  getSafeAttributes
+  getSafeAttributes,
+  destroy
 };
