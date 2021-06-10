@@ -61,7 +61,7 @@ const gamelleFoodRequest = async () => {
         const foodAlreadyExists = firstRequest.filter(
           (item) => item.gamelleId === food.id
         );
-        const { nom, marque, especes, type } = food;
+        const { nom, marque, especes, type, barcode } = food;
         let WGFoodTypeId = null;
         let WGCategoryId = null;
 
@@ -88,6 +88,7 @@ const gamelleFoodRequest = async () => {
               foodTypeId: WGFoodTypeId,
               animalCategoryId: WGCategoryId,
               image: food.image.replace(/\\/g, ''),
+              barcode,
             },
           });
         } else {
@@ -99,6 +100,7 @@ const gamelleFoodRequest = async () => {
               foodTypeId: WGFoodTypeId,
               animalCategoryId: WGCategoryId,
               image: food.image.replace(/\\/g, ''),
+              barcode,
             },
           });
         }
