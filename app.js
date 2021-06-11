@@ -77,6 +77,6 @@ process.on('beforeExit', () => {
   });
 });
 
-requestsToAPI.gamelleBreedsRequest();
+// requestsToAPI.gamelleBreedsRequest();
 
 module.exports = server;
