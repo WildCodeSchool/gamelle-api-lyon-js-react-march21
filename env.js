@@ -15,7 +15,7 @@ const inTestEnv = getEnv('NODE_ENV') === 'test';
 const PORT = getEnv(`PORT${inTestEnv ? '_TEST' : ''}`);
 const DATABASE_URL = getEnv(`DATABASE_URL`);
 const API_URL = getEnv(`API_URL`);
-const API_BACK = getEnv(`API_BACK`)
+const API_BACK = getEnv(`API_BACK`);
 
 const dbUrlregex =
   /* eslint-disable */
@@ -31,6 +31,10 @@ const CORS_ALLOWED_ORIGINS = getEnv(`CORS_ALLOWED_ORIGINS`);
 const SESSION_COOKIE_DOMAIN = getEnv(`SESSION_COOKIE_DOMAIN`);
 const SESSION_COOKIE_NAME = getEnv(`SESSION_COOKIE_NAME`);
 const SESSION_COOKIE_SECRET = getEnv(`SESSION_COOKIE_SECRET`);
+
+const EMAIL_SENDER = getEnv(`EMAIL_SENDER`);
+const RESET_PASSWORD_FRONT_URL = getEnv(`RESET_PASSWORD_FRONT_URL`);
+const CONFIRMED_EMAIL_FRONT_URL = getEnv(`CONFIRMED_EMAIL_FRONT_URL`);
 
 module.exports = {
   getEnv,
@@ -49,5 +53,8 @@ module.exports = {
   DB_NAME,
   DB_PORT,
   API_URL,
-  API_BACK
+  API_BACK,
+  EMAIL_SENDER,
+  RESET_PASSWORD_FRONT_URL,
+  CONFIRMED_EMAIL_FRONT_URL,
 };
