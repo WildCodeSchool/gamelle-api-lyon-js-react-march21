@@ -3,6 +3,7 @@ const currentUserRouter = require('./currentUser');
 const userRouter = require('./users');
 const searchesRouter = require('./searches');
 const foodsRouter = require('./foods');
+const historiesRouter = require('./histories');
 
 module.exports = (app) => {
   app.use('/users', userRouter);
@@ -10,4 +11,5 @@ module.exports = (app) => {
   app.use('/currentUser', currentUserRouter);
   app.use('/searches', searchesRouter);
   app.use('/foods', foodsRouter);
+  app.use('/histories', historiesRouter);
 };
