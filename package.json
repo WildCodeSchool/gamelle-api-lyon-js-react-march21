@@ -4,14 +4,22 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start:server": "node app.js",
     "start:server:watch": "nodemon app.js",
-    "start": "npm-run-all start:server",
-    "start:watch": "npm-run-all start:server:watch",
-    "dev": "npm-run-all setup-db start:watch",
-    "test": "NODE_ENV=test jest --testRunner='jest-circus/runner' --maxWorkers=1",
     "lint": "eslint --fix .",
-    "ts-node": "ts-node --compiler-options '{\"module\": \"commonjs\"}'"
+    "ts-node": "ts-node --compiler-options '{\"module\": \"commonjs\"}'",
+    "start": "npm-run-all generate-db-client migrate:deploy start:server",
+    "generate-db-client": "npx prisma generate",
+    "migrate:deploy": "npx prisma migrate deploy",
+    "start:server": "node app.js",
+    "start:watch": "nodemon app.js",
+    "dev": "npm-run-all migrate:dev start:watch",
+    "reset-db": "npx prisma migrate reset",
+    "migrate:dev": "npx prisma migrate dev",
+    "migrate:test": "dotenv -- cross-var \"DATABASE_URL=%DATABASE_URL_TEST% npx prisma migrate deploy\"",
+    "test": "NODE_ENV=test npm-run-all migrate:test test:run",
+    "test:run": "jest --testRunner='jest-circus/runner' --maxWorkers=1 --detectOpenHandles",
+    "test:watch": "jest --testRunner='jest-circus/runner' --maxWorkers=1 --watch --detectOpenHandles",
+    "wait-for-db": "node ./scripts/wait-for-db.js"
   },
   "husky": {
     "hooks": {
@@ -48,6 +56,7 @@
     "lodash": "^4.17.20",
     "multer": "^1.4.2",
     "mysql2": "^2.2.5",
+    "nodemailer": "^6.6.1",
     "npm-run-all": "^4.1.5",
     "prisma": "2.23.0",
     "sanitize-filename": "^1.6.3",

@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
-const requestsToAPI = require('./requestsToAPI');
+// const requestsToAPI = require('./requestsToAPI');
 
 const {
   PORT,
@@ -77,6 +77,6 @@ process.on('beforeExit', () => {
   });
 });
 
-requestsToAPI.gamelleBreedsRequest();
+// requestsToAPI.gamelleBreedsRequest();
 
 module.exports = server;
