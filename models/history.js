@@ -1,23 +1,19 @@
-const axios = require('axios');
 const db = require('../db');
-const { API_URL } = require('../env');
 
-const findBarcode = async (id) => {
-  const idInt = parseInt(id, 10);
-  const product = await db.food.findUnique({
+const createHistory = async ({ filters: { userId, foodId } }) => {
+  const fav = await db.favorite.findFirst({
     where: {
-      id: idInt,
+      userId,
+      foodId,
     },
   });
-  return product.barcode;
+
+  const favoriteId = fav ? fav.id : null;
+  const consultedAt = new Date();
+
+  return db.history.create({
+    data: { consultedAt, userId, foodId, favoriteId },
+  });
 };
 
-const findDetails = async (barcode) => {
-  // console.log(barcode);
-  // console.log(`${API_URL}/product/${barcode}`);
-  return axios
-    .get(`${API_URL}/product/${barcode}`)
-    .then((response) => response.data.data);
-};
-
-module.exports = { findBarcode, findDetails };
+module.exports = { createHistory };

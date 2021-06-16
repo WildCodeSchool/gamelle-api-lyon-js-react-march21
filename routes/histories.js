@@ -1,30 +1,19 @@
-const foodsRouter = require('express').Router();
-const Food = require('../models/history');
+const historiesRouter = require('express').Router();
+const History = require('../models/history');
 
-foodsRouter.get('/', async (req, res) => {
-  const { id } = req.params;
+historiesRouter.post('/', (req, res) => {
+  const { userId, foodId } = req.body;
 
-  const barcode = await Food.findBarcode(id)
-    .then((result) => {
-      return result;
-    })
-    .catch((err) => {
-      console.log(err);
-      return res
-        .status(500)
-        .send('Il y a eu une erreur lors de la récupération du code barre');
-    });
-
-  return Food.findDetails(barcode)
-    .then((results) => {
-      return res.json(results);
+  return History.createHistory({ filters: { userId, foodId } })
+    .then((history) => {
+      res.json(history);
     })
     .catch((err) => {
       console.log(err);
       res
         .status(500)
-        .send('Il y a eu une erreur lors de la récupération du produit');
+        .send("Il y a eu une erreur lors de l'enregistrement de l'historique");
     });
 });
 
-module.exports = foodsRouter;
+module.exports = historiesRouter;

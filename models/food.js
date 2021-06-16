@@ -13,8 +13,6 @@ const findBarcode = async (id) => {
 };
 
 const findDetails = async (barcode) => {
-  // console.log(barcode);
-  // console.log(`${API_URL}/product/${barcode}`);
   return axios
     .get(`${API_URL}/product/${barcode}`)
     .then((response) => response.data.data);
