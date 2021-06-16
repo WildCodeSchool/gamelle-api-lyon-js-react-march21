@@ -196,4 +196,13 @@ usersRouter.patch(
   })
 );
 
+usersRouter.delete(
+  '/:id',
+  requireCurrentUser,
+  expressAsyncHandler(async (req, res) => {
+    if (await User.destroy(req.params.id)) res.sendStatus(204);
+    else throw new RecordNotFoundError();
+  })
+);
+
 module.exports = usersRouter;
