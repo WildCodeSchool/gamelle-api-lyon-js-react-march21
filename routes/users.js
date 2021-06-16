@@ -4,14 +4,14 @@ const expressAsyncHandler = require('express-async-handler');
 const uniqid = require('uniqid');
 const requireCurrentUser = require('../middlewares/requireCurrentUser');
 const handleImageUpload = require('../middlewares/handleImageUpload');
+const emailer = require('../mailer');
 const User = require('../models/user');
 const { ValidationError, RecordNotFoundError } = require('../error-types');
 const tryDeleteFile = require('../helpers/tryDeleteFile');
-const emailer = require('../mailer');
 const {
   RESET_PASSWORD_FRONT_URL,
   EMAIL_SENDER,
-  // CONFIRMED_EMAIL_FRONT_URL,
+  CONFIRMED_EMAIL_FRONT_URL,
 } = require('../env');
 
 usersRouter.post('/', async (req, res) => {
@@ -19,14 +19,51 @@ usersRouter.post('/', async (req, res) => {
   if (validationError)
     return res.status(422).send({ errors: validationError.details });
   if (await User.emailAlreadyExists(req.body.email))
-    return res.status(422).send({ error: 'this email is already taken' });
+    return res.status(422).send({ error: 'This email is already taken !' });
   if (req.body.phone && (await User.phoneAlreadyExist(req.body.phone)))
     return res
       .status(422)
-      .send({ error: 'this phone number is already taken' });
+      .send({ error: 'This phone number is already taken  !' });
   const newUser = await User.create(req.body);
+  const user = await User.findByEmail(req.body.email);
+  if (user && user.confirmedEmailToken === 'Pending') {
+    const token = uniqid();
+    const hashedToken = await User.hashPassword(token);
+    await User.update(user.id, { confirmedEmailToken: hashedToken });
+
+    const mailContent = `${CONFIRMED_EMAIL_FRONT_URL}?userId=${user.id}&token=${token}`;
+    await emailer.sendMail(
+      {
+        from: EMAIL_SENDER,
+        to: user.email,
+        subject: 'Confirmation de votre compte',
+        text: mailContent,
+        html: `<a href="${mailContent}">Appuyer sur ce lien pour confirmer votre compte</a>`,
+      },
+      (err, info) => {
+        if (err) console.error(err);
+        else console.log(info);
+      }
+    );
+  }
   return res.status(201).send(User.getSafeAttributes(newUser));
 });
+
+usersRouter.post(
+  '/validated-email',
+  expressAsyncHandler(async (req, res) => {
+    const { userId, token } = req.body;
+    const user = await User.findOne(userId);
+    if (user && (await User.verifyPassword(token, user.confirmedEmailToken))) {
+      await User.update(user.id, {
+        confirmedEmailToken: 'Active',
+      });
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(400);
+    }
+  })
+);
 
 usersRouter.post(
   '/reset-password-email',
