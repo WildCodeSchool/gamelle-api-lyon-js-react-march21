@@ -3,7 +3,6 @@ const asyncHandler = require('express-async-handler');
 const User = require('../models/user');
 const { SESSION_COOKIE_DOMAIN, SESSION_COOKIE_NAME } = require('../env');
 
-
 // --------- Function for user login ---------  //
 authRouter.post(
   '/login',
@@ -12,9 +11,10 @@ authRouter.post(
     const user = await User.findByEmail(email);
     if (
       user &&
-      (await User.verifyPassword(password, user.hashedPassword))
+      (await User.verifyPassword(password, user.hashedPassword)) &&
+      user.confirmedEmailToken === 'Active'
     ) {
-      console.log('ok');
+      console.log('Utilisateur connecté');
       if (stayConnected) {
         // --------- session cookie will be valid for a day --------- //
         req.session.cookie.maxAge = 24 * 60 * 60 * 1000;
