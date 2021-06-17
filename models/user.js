@@ -2,7 +2,7 @@ const argon2 = require('argon2');
 const Joi = require('joi');
 const JoiPhoneNumber = Joi.extend(require('joi-phone-number'));
 const db = require('../db');
-const { API_BACK } = require('../env')
+const { API_BACK } = require('../env');
 
 // ---------Creation d'une fonction pour trouver un utilisateur par son email--------- //
 const findByEmail = (email) => {
@@ -58,29 +58,42 @@ const update = async (id, data) =>
       avatarUrl:
         typeof data.avatarUrl === 'string'
           ? data.avatarUrl.replace(`${API_BACK}/`, '')
-          : null,
+          : data.avatarUrl,
     },
   });
 
 // ---------Creation d'une fonction validation avec Joi--------- //
 const validate = (data, forUpdate = false) =>
   Joi.object({
-    firstname: Joi.string().min(1).max(255).presence(forUpdate ? 'optional' : 'required'),
-    lastname: Joi.string().min(1).max(255).presence(forUpdate ? 'optional' : 'required'),
+    firstname: Joi.string()
+      .min(1)
+      .max(255)
+      .presence(forUpdate ? 'optional' : 'required'),
+    lastname: Joi.string()
+      .min(1)
+      .max(255)
+      .presence(forUpdate ? 'optional' : 'required'),
     phone: JoiPhoneNumber.string()
       .phoneNumber()
       .min(10)
       .max(20)
       .allow(null, '')
       .optional(),
-    email: Joi.string().email().max(255).presence(forUpdate ? 'optional' : 'required'),
-    password: Joi.string().min(8).presence(forUpdate ? 'optional' : 'required'),
+    email: Joi.string()
+      .email()
+      .max(255)
+      .presence(forUpdate ? 'optional' : 'required'),
+    password: Joi.string()
+      .min(8)
+      .presence(forUpdate ? 'optional' : 'required'),
     avatarUrl: Joi.string().max(255).allow(null, ''),
   }).validate(data, { abortEarly: false }).error;
 
 const getSafeAttributes = (user) => {
   let { avatarUrl } = user;
-  if (avatarUrl && !avatarUrl.startsWith('http://') &&
+  if (
+    avatarUrl &&
+    !avatarUrl.startsWith('http://') &&
     !avatarUrl.startsWith('https://')
   ) {
     avatarUrl = `${API_BACK}/${avatarUrl}`;
@@ -93,7 +106,10 @@ const getSafeAttributes = (user) => {
 };
 
 const destroy = (id) =>
-  db.user.delete({ where: { id: parseInt(id, 10) } })
+
+db.user
+    .delete({ where: { id: parseInt(id, 10) } })
+
     .then(() => true)
     .catch(() => false);
 
@@ -109,5 +125,6 @@ module.exports = {
   findMany,
   update,
   getSafeAttributes,
-  destroy
+  destroy,
+
 };
