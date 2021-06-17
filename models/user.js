@@ -106,8 +106,10 @@ const getSafeAttributes = (user) => {
 };
 
 const destroy = (id) =>
-  db.user
+
+db.user
     .delete({ where: { id: parseInt(id, 10) } })
+
     .then(() => true)
     .catch(() => false);
 
@@ -124,4 +126,5 @@ module.exports = {
   update,
   getSafeAttributes,
   destroy,
+
 };
