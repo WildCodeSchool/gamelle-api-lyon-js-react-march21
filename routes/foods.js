@@ -4,27 +4,21 @@ const Food = require('../models/food');
 foodsRouter.get('/:id', async (req, res) => {
   const { id } = req.params;
 
-  const barcode = await Food.findBarcode(id)
-    .then((result) => {
+  try {
+    const barcode = await Food.findBarcode(id).then((result) => {
       return result;
-    })
-    .catch((err) => {
-      console.log(err);
-      return res
-        .status(500)
-        .send('Il y a eu une erreur lors de la récupération du code barre');
     });
 
-  return Food.findDetails(barcode)
-    .then((results) => {
+    await Food.findDetails(barcode).then((results) => {
       return res.json(results);
-    })
-    .catch((err) => {
-      console.log(err);
-      res
-        .status(500)
-        .send('Il y a eu une erreur lors de la récupération du produit');
     });
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .send(
+        'Il y a eu une erreur lors de la récupération des détails du produit'
+      );
+  }
 });
-
 module.exports = foodsRouter;
