@@ -25,17 +25,16 @@ usersRouter.post('/', async (req, res) => {
       .status(422)
       .send({ error: 'This phone number is already taken  !' });
   const newUser = await User.create(req.body);
-  const user = await User.findByEmail(req.body.email);
-  if (user && user.confirmedEmailToken === 'Pending') {
+  if (newUser && (await User.findByEmail(req.body.email))) {
     const token = uniqid();
     const hashedToken = await User.hashPassword(token);
-    await User.update(user.id, { confirmedEmailToken: hashedToken });
+    await User.update(newUser.id, { confirmedEmailToken: hashedToken });
 
-    const mailContent = `${CONFIRMED_EMAIL_FRONT_URL}?userId=${user.id}&token=${token}`;
+    const mailContent = `${CONFIRMED_EMAIL_FRONT_URL}?userId=${newUser.id}&token=${token}`;
     await emailer.sendMail(
       {
         from: EMAIL_SENDER,
-        to: user.email,
+        to: newUser.email,
         subject: 'Confirmation de votre compte',
         text: mailContent,
         html: `<a href="${mailContent}">Appuyer sur ce lien pour confirmer votre compte</a>`,
@@ -112,52 +111,6 @@ usersRouter.post(
   })
 );
 
-/* usersRouter.post(
-  '/send-confirmed-email',
-  expressAsyncHandler(async (req, res) => {
-    const user = await User.findByEmail(req.body.email);
-    if (user) {
-      const token = uniqid();
-      const hashedToken = await User.hashPassword(token);
-      await User.update(user.id, { resetPasswordToken: hashedToken });
-
-      const mailContent = `${CONFIRMED_EMAIL_FRONT_URL}?userId=${user.id}&token=${token}`;
-      await emailer.sendMail(
-        {
-          from: EMAIL_SENDER,
-          to: user.email,
-          subject: 'Confirmation de votre adresse email',
-          text: mailContent,
-          html: `<a href="${mailContent}">Appuyer sur ce lien pour confirmer votre adresse email</a>`,
-        },
-        (err, info) => {
-          if (err) console.error(err);
-          else console.log(info);
-        }
-      );
-    }
-    res.sendStatus(200);
-  })
-);
-
-usersRouter.post(
-  '/confirmed-email',
-  expressAsyncHandler(async (req, res) => {
-    const { userId, token, email } = req.body;
-    const user = await User.findOne(userId);
-
-    if (user && (await User.verifyPassword(token, user.resetPasswordToken))) {
-      await User.update(user.id, {
-        email,
-        resetPasswordToken: null,
-      });
-      res.sendStatus(200);
-    } else {
-      res.sendStatus(400);
-    }
-  })
-); */
-
 usersRouter.patch(
   '/:id',
   requireCurrentUser,
@@ -199,6 +152,14 @@ usersRouter.patch(
 usersRouter.delete(
   '/:id',
   requireCurrentUser,
+  expressAsyncHandler(async (req, res, next) => {
+    if (
+      req.currentUser.role === 'admin' ||
+      req.currentUser.id.toString() === req.params.id
+    )
+      next();
+    else res.sendStatus(403);
+  }),
   expressAsyncHandler(async (req, res) => {
     if (await User.destroy(req.params.id)) res.sendStatus(204);
     else throw new RecordNotFoundError();
