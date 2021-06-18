@@ -59,7 +59,7 @@ searchesRouter.post('/', (req, res) => {
       console.log(err);
       res
         .status(500)
-        .send('Il y a eu une erreur lors de la récupération des données');
+        .send('Il y a eu une erreur lors de la récupération des produits');
     });
 });
 

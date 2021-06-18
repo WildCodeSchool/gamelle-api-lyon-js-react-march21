@@ -73,7 +73,7 @@ const findProducts = async ({
     });
 
   return db.$queryRaw(
-    `SELECT * FROM Food WHERE brand="${brand}" ${animalcategorySQL} ${foodTypeSQL} ${searchText}`
+    `SELECT * FROM Food WHERE brand="${brand}" ${animalcategorySQL} ${foodTypeSQL} ${searchText};`
   ); // Attention ! Ne pas remplacer les guillemets doubles par des simples car la requête échoue avec les noms comportant un guillemet simple comme 4PAT'
 };
 
