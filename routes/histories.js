@@ -16,8 +16,9 @@ historiesRouter.get('/', requireCurrentUser, async (req, res) => {
   }
 });
 
-historiesRouter.post('/', (req, res) => {
-  const { userId, foodId } = req.body;
+historiesRouter.post('/', requireCurrentUser, (req, res) => {
+  const userId = req.currentUser.id;
+  const { foodId } = req.body;
 
   return History.createHistory({ filters: { userId, foodId } })
     .then((history) => {
