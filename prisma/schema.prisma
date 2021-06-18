@@ -21,6 +21,7 @@ model User {
   avatarUrl           String?    @db.VarChar(255)
   confirmedEmailToken String     @default("Pending") @db.VarChar(255)
   resetPasswordToken  String?    @db.VarChar(255)
+  googleId            Int?
   Animals             Animal[]
   History             History[]
   Favorites           Favorite[]

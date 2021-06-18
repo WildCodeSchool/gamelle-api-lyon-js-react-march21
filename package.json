@@ -58,7 +58,10 @@
     "mysql2": "^2.2.5",
     "nodemailer": "^6.6.1",
     "npm-run-all": "^4.1.5",
-    "prisma": "2.23.0",
+    "passport": "^0.4.1",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-google-oauth": "^2.0.0",
+    "passport-local": "^1.0.0",
     "sanitize-filename": "^1.6.3",
     "typescript": "^4.3.2",
     "uniqid": "^5.3.0"

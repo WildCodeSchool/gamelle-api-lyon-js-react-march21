@@ -1,6 +1,7 @@
 const argon2 = require('argon2');
 const Joi = require('joi');
 const JoiPhoneNumber = Joi.extend(require('joi-phone-number'));
+const { RecordNotFoundError } = require('../error-types');
 const db = require('../db');
 const { API_BACK } = require('../env');
 
@@ -36,7 +37,7 @@ const hashPassword = (plainPassword) => {
   return argon2.hash(plainPassword, hashingOptions);
 };
 
-// ---------Creation d'une fonction pour creer un email--------- //
+// ---------Creation d'une fonction pour creer un user--------- //
 const create = async ({ firstname, lastname, phone, email, password }) => {
   const hashedPassword = await hashPassword(password);
   return db.user.create({
@@ -87,6 +88,7 @@ const validate = (data, forUpdate = false) =>
       .min(8)
       .presence(forUpdate ? 'optional' : 'required'),
     avatarUrl: Joi.string().max(255).allow(null, ''),
+    googleId: Joi.string(),
   }).validate(data, { abortEarly: false }).error;
 
 const getSafeAttributes = (user) => {
@@ -111,6 +113,15 @@ const destroy = (id) =>
     .then(() => true)
     .catch(() => false);
 
+const findByGoogleId = async (id, failIfNotFound = true) => {
+  const rows = await db.user.findFirst({ where: { googleId: id } });
+  if (rows.length) {
+    return rows[0];
+  }
+  if (failIfNotFound) throw new RecordNotFoundError();
+  return null;
+};
+
 module.exports = {
   findByEmail,
   emailAlreadyExists,
@@ -124,4 +135,5 @@ module.exports = {
   update,
   getSafeAttributes,
   destroy,
+  findByGoogleId
 };

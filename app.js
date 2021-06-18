@@ -1,8 +1,11 @@
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+const LocalStrategy = require('passport-local').Strategy;
 const requestsToAPI = require('./requestsToAPI');
-
+const User = require('./models/user');
 const {
   PORT,
   CORS_ALLOWED_ORIGINS,
@@ -11,9 +14,11 @@ const {
   SESSION_COOKIE_SECRET,
   SESSION_COOKIE_NAME,
   SESSION_COOKIE_DOMAIN,
+  API_BACK,
 } = require('./env');
 
 const sessionStore = require('./sessionStore');
+// const { user } = require('./db');
 
 const app = express();
 
@@ -50,6 +55,58 @@ app.use(
     },
   })
 );
+
+passport.use(
+  new LocalStrategy(
+    { usernameField: 'email' },
+    async (email, password, done) => {
+      const user = await User.findByEmail(email, false);
+      if (user && (await User.verifyPassword(user, password))) {
+        return done(null, user);
+      }
+      return done(null, false);
+    }
+  )
+);
+
+passport.use(
+  new GoogleStrategy({
+    clientID: "10988819502-6041kqu6j43j4k8njugdt74p577vtdrn.apps.googleusercontent.com",
+    clientSecret: "Ekp2tcMrlC3-n0NutWqkn_XB",
+    callbackURL: `${API_BACK}/auth/google/callback`
+  },
+    async (accesToken, resfreshToken, profile, done) => {
+      try {
+        const existingUser = await User.findByGoogleId(profile.id, false);
+        if (existingUser) done(null, existingUser);
+        else {
+          const user = await User.create({
+            email: profile._json.email, // eslint-disable-line
+            firstname: profile._json.given_name, // eslint-disable-line
+            lastname: profile._json.family_name, // eslint-disable-line
+            googleId: profile.id, // eslint-disable-line
+            confirmedEmailToken: 'Active',
+          });
+          done(null, user);
+
+        }
+      } catch (err) {
+        done(err)
+      }
+    }
+  ));
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser(async (id, user, done) => {
+  await User.findOne(id);
+  done(null, user);
+});
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('/file-storage', express.static('file-storage'));
 
