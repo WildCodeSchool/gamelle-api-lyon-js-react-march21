@@ -15,6 +15,8 @@ const {
   SESSION_COOKIE_NAME,
   SESSION_COOKIE_DOMAIN,
   API_BACK,
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET
 } = require('./env');
 
 const sessionStore = require('./sessionStore');
@@ -71,8 +73,8 @@ passport.use(
 
 passport.use(
   new GoogleStrategy({
-    clientID: "10988819502-6041kqu6j43j4k8njugdt74p577vtdrn.apps.googleusercontent.com",
-    clientSecret: "Ekp2tcMrlC3-n0NutWqkn_XB",
+    clientID: `${GOOGLE_CLIENT_ID}`,
+    clientSecret: `${GOOGLE_CLIENT_SECRET}`,
     callbackURL: `${API_BACK}/auth/google/callback`
   },
     async (accesToken, resfreshToken, profile, done) => {

@@ -2,7 +2,7 @@ const authRouter = require('express').Router();
 const asyncHandler = require('express-async-handler');
 const passport = require('passport')
 const User = require('../models/user');
-const { SESSION_COOKIE_DOMAIN, SESSION_COOKIE_NAME } = require('../env');
+const { SESSION_COOKIE_DOMAIN, SESSION_COOKIE_NAME, URL_FRONT } = require('../env');
 
 // --------- Function for logout --------- //
 authRouter.get('/logout', (req, res) => {
@@ -66,7 +66,7 @@ authRouter.get('/google', asyncHandler(async (req, res, next) => {
 
 authRouter.get('/google/callback', asyncHandler(async (req, res, next) => {
   passport.authenticate('google', {
-    successRedirect: 'http://localhost:3000/profil',
+    successRedirect: `${URL_FRONT}/profil`,
     failureRedirect: '/auth/google',
   })(req, res, next);
 }));
