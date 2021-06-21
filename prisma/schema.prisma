@@ -11,17 +11,19 @@ datasource db {
 }
 
 model User {
-  id             Int        @id @default(autoincrement())
-  firstname      String     @db.VarChar(255)
-  lastname       String     @db.VarChar(255)
-  phone          String?    @db.VarChar(20)
-  email          String     @unique @db.VarChar(255)
-  hashedPassword String     @db.VarChar(255)
-  role           String     @default("user") @db.VarChar(255)
-  avatarUrl      String?    @db.VarChar(255)
-  Animals        Animal[]
-  History        History[]
-  Favorites      Favorite[]
+  id                  Int        @id @default(autoincrement())
+  firstname           String     @db.VarChar(255)
+  lastname            String     @db.VarChar(255)
+  phone               String?    @db.VarChar(20)
+  email               String     @unique @db.VarChar(255)
+  hashedPassword      String     @db.VarChar(255)
+  role                String     @default("user") @db.VarChar(255)
+  avatarUrl           String?    @db.VarChar(255)
+  confirmedEmailToken String     @default("Pending") @db.VarChar(255)
+  resetPasswordToken  String?    @db.VarChar(255)
+  Animals             Animal[]
+  History             History[]
+  Favorites           Favorite[]
 }
 
 model AnimalCategory {
@@ -50,6 +52,7 @@ model Food {
   gamelleId                       Int                 @unique
   brand                           String?             @db.VarChar(255)
   name                            String?             @db.VarChar(255)
+  barcode                         String?             @db.VarChar(255)
   foodTypeId                      Int?
   FoodTypes                       FoodType?           @relation(fields: [foodTypeId], references: [id])
   animalCategoryId                Int?

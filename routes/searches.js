@@ -47,10 +47,15 @@ searchesRouter.get('/', async (req, res) => {
 });
 
 searchesRouter.post('/', (req, res) => {
-  const { brand, foodTypeName, animalCategoryName, searchedWords } = req.body;
+  const { brand, foodTypeId, animalCategoryId, searchedWords } = req.body;
 
   return Search.findProducts({
-    filters: { brand, foodTypeName, animalCategoryName, searchedWords },
+    filters: {
+      brand,
+      foodTypeId: foodTypeId || undefined,
+      animalCategoryId: animalCategoryId || undefined,
+      searchedWords,
+    },
   })
     .then((products) => {
       res.json(products);
@@ -59,7 +64,7 @@ searchesRouter.post('/', (req, res) => {
       console.log(err);
       res
         .status(500)
-        .send('Il y a eu une erreur lors de la récupération des données');
+        .send('Il y a eu une erreur lors de la récupération des produits');
     });
 });
 
