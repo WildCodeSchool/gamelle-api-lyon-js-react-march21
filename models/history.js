@@ -11,6 +11,7 @@ const findHistories = async (id) => {
     },
     include: {
       Foods: true,
+      Favorites: true,
     },
   });
 };
