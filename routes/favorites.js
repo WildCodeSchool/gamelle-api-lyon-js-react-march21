@@ -25,20 +25,20 @@ favoritesRouter.delete(
   })
 );
 
-// favoritesRouter.post('/', requireCurrentUser, (req, res) => {
-//   const userId = req.currentUser.id;
-//   const { foodId } = req.body;
-
-//   return Favorite.createHistory({ filters: { userId, foodId } })
-//     .then((history) => {
-//       res.json(history);
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//       res
-//         .status(500)
-//         .send("Il y a eu une erreur lors de l'enregistrement de l'historique");
-//     });
-// });
+favoritesRouter.post('/', requireCurrentUser, (req, res) => {
+  const userId = req.currentUser.id;
+  const { foodId } = req.body;
+  console.log('foodId   ', foodId);
+  return Favorite.createFavorite({ filters: { userId, foodId } })
+    .then((favorite) => {
+      res.json(favorite);
+    })
+    .catch((err) => {
+      console.log(err);
+      res
+        .status(500)
+        .send("Il y a eu une erreur lors de l'enregistrement du favori");
+    });
+});
 
 module.exports = favoritesRouter;

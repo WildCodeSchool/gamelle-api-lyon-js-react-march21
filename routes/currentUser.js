@@ -7,9 +7,9 @@ const User = require('../models/user');
 currentUserRouter.get(
   '/',
   requireCurrentUser,
-  asyncHandler(async (req, res) => {
-    res.json(User.getSafeAttributes(req.currentUser));
-  })
+  asyncHandler(async (req, res) =>
+    res.json(User.getSafeAttributes(req.currentUser))
+  )
 );
 
 module.exports = currentUserRouter;

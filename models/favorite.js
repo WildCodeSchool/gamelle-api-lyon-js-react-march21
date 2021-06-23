@@ -18,18 +18,16 @@ const destroy = (id) =>
     .catch(() => false);
 
 const createFavorite = async ({ filters: { userId, foodId } }) => {
-  const fav = await db.favorite.findFirst({
-    where: {
-      userId,
-      foodId,
-    },
-  });
-
-  const favoriteId = fav ? fav.id : null;
-  const consultedAt = new Date();
-
-  return db.history.create({
-    data: { consultedAt, userId, foodId, favoriteId },
+  // const ExistingFav = await db.favorite.findFirst({
+  //   where: {
+  //     userId,
+  //     foodId,
+  //   },
+  // });
+  console.log(userId);
+  console.log(foodId);
+  return db.favorite.create({
+    data: { userId, foodId },
   });
 };
 

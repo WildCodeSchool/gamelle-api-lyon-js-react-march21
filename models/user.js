@@ -27,7 +27,16 @@ const hashingOptions = {
 };
 
 // ---------Creation d'une fonction pour trouver un utilisateur par son id unique--------- //
-const findOne = (id) => db.user.findUnique({ where: { id: parseInt(id, 10) } });
+const findOne = async (id) => {
+  const tempProfile = await db.user.findUnique({
+    where: { id: parseInt(id, 10) },
+  });
+  const favs = await db.favorite.findMany({
+    where: { userId: parseInt(id, 10) },
+  });
+  const favsArray = favs.map((fav) => [fav.id, fav.foodId]);
+  return { ...tempProfile, favorites: favsArray };
+};
 
 const { findMany } = db.user;
 
