@@ -17,6 +17,19 @@ favoritesRouter.get('/', requireCurrentUser, async (req, res) => {
   }
 });
 
+favoritesRouter.get('/listfav', requireCurrentUser, async (req, res) => {
+  const { id } = req.currentUser;
+  try {
+    const FavoriteData = await Favorite.findListOfFavorites(id);
+    return res.json(FavoriteData);
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .send('Il y a eu une erreur lors de la récupération des favoris');
+  }
+});
+
 favoritesRouter.delete(
   '/:id',
   expressAsyncHandler(async (req, res) => {

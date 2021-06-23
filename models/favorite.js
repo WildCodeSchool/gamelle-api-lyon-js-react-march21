@@ -11,6 +11,28 @@ const findFavorites = async (id) => {
   });
 };
 
+const findListOfFavorites = async (id) => {
+  const baseList = await db.favorite.findMany({
+    where: {
+      userId: id,
+    },
+    select: {
+      foodId: true,
+    },
+  });
+
+  const convertArrayToObject = (array, key) => {
+    return array.reduce((obj, item) => {
+      return {
+        ...obj,
+        [item[key]]: true,
+      };
+    }, {});
+  };
+
+  return convertArrayToObject(baseList, 'foodId');
+};
+
 const destroy = (id) =>
   db.favorite
     .delete({ where: { id: parseInt(id, 10) } })
@@ -18,14 +40,6 @@ const destroy = (id) =>
     .catch(() => false);
 
 const createFavorite = async ({ filters: { userId, foodId } }) => {
-  // const ExistingFav = await db.favorite.findFirst({
-  //   where: {
-  //     userId,
-  //     foodId,
-  //   },
-  // });
-  console.log(userId);
-  console.log(foodId);
   return db.favorite.create({
     data: { userId, foodId },
   });
@@ -34,5 +48,6 @@ const createFavorite = async ({ filters: { userId, foodId } }) => {
 module.exports = {
   createFavorite,
   findFavorites,
+  findListOfFavorites,
   destroy,
 };

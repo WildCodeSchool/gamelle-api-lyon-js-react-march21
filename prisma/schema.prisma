@@ -89,7 +89,6 @@ model Favorite {
   Users               User                 @relation(fields: [userId], references: [id])
   foodId              Int
   Foods               Food                 @relation(fields: [foodId], references: [id])
-  History             History[]
   AnimalFavoriteFoods AnimalFavoriteFood[]
 }
 
@@ -100,8 +99,6 @@ model History {
   Users       User      @relation(fields: [userId], references: [id])
   foodId      Int
   Foods       Food      @relation(fields: [foodId], references: [id])
-  favoriteId  Int?
-  Favorites   Favorite? @relation(fields: [favoriteId], references: [id])
 }
 
 model AnimalFavoriteFood {
