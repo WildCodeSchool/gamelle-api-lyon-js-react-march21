@@ -7,8 +7,10 @@ const requireCurrentUser = require('../middlewares/requireCurrentUser');
 favoritesRouter.get('/', requireCurrentUser, async (req, res) => {
   const { id } = req.currentUser;
   try {
-    const FavoriteData = await Favorite.findFavorites(id);
-    return res.json(FavoriteData);
+    const favoriteData = await Favorite.findFavorites(id);
+    console.log(id);
+    console.log(favoriteData);
+    return res.json(favoriteData);
   } catch (err) {
     console.log(err);
     return res
@@ -31,9 +33,12 @@ favoritesRouter.get('/listfav', requireCurrentUser, async (req, res) => {
 });
 
 favoritesRouter.delete(
-  '/:id',
+  '/:foodId',
+  requireCurrentUser,
   expressAsyncHandler(async (req, res) => {
-    if (await Favorite.destroy(req.params.id)) res.sendStatus(204);
+    const userId = req.currentUser.id;
+    const foodId = parseInt(req.params.foodId, 10);
+    if (await Favorite.destroy({ userId, foodId })) res.sendStatus(204);
     else throw new RecordNotFoundError();
   })
 );
@@ -41,7 +46,7 @@ favoritesRouter.delete(
 favoritesRouter.post('/', requireCurrentUser, (req, res) => {
   const userId = req.currentUser.id;
   const { foodId } = req.body;
-  console.log('foodId   ', foodId);
+
   return Favorite.createFavorite({ filters: { userId, foodId } })
     .then((favorite) => {
       res.json(favorite);

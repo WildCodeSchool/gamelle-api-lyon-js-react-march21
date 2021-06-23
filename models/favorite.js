@@ -33,9 +33,9 @@ const findListOfFavorites = async (id) => {
   return convertArrayToObject(baseList, 'foodId');
 };
 
-const destroy = (id) =>
+const destroy = ({ userId, foodId }) =>
   db.favorite
-    .delete({ where: { id: parseInt(id, 10) } })
+    .deleteMany({ where: { userId, foodId } })
     .then(() => true)
     .catch(() => false);
 
