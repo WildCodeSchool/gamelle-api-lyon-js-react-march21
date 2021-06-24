@@ -8,8 +8,6 @@ favoritesRouter.get('/', requireCurrentUser, async (req, res) => {
   const { id } = req.currentUser;
   try {
     const favoriteData = await Favorite.findFavorites(id);
-    console.log(id);
-    console.log(favoriteData);
     return res.json(favoriteData);
   } catch (err) {
     console.log(err);
