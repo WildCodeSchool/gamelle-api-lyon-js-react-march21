@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
 const passport = require('passport');
+const uniqid = require('uniqid');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const LocalStrategy = require('passport-local').Strategy;
 const requestsToAPI = require('./requestsToAPI');
@@ -16,11 +17,10 @@ const {
   SESSION_COOKIE_DOMAIN,
   API_BACK,
   GOOGLE_CLIENT_ID,
-  GOOGLE_CLIENT_SECRET
+  GOOGLE_CLIENT_SECRET,
 } = require('./env');
 
 const sessionStore = require('./sessionStore');
-// const { user } = require('./db');
 
 const app = express();
 
@@ -72,38 +72,43 @@ passport.use(
 );
 
 passport.use(
-  new GoogleStrategy({
-    clientID: `${GOOGLE_CLIENT_ID}`,
-    clientSecret: `${GOOGLE_CLIENT_SECRET}`,
-    callbackURL: `${API_BACK}/auth/google/callback`
-  },
+  new GoogleStrategy(
+    {
+      clientID: GOOGLE_CLIENT_ID,
+      clientSecret: GOOGLE_CLIENT_SECRET,
+      callbackURL: `${API_BACK}/auth/google/callback`,
+    },
     async (accesToken, resfreshToken, profile, done) => {
       try {
         const existingUser = await User.findByGoogleId(profile.id, false);
         if (existingUser) done(null, existingUser);
         else {
-          const user = await User.create({
+          const newPassword = uniqid();
+          const newHashedPassword = await User.hashPassword(newPassword);
+          const user = await User.googleCreate({
             email: profile._json.email, // eslint-disable-line
             firstname: profile._json.given_name, // eslint-disable-line
             lastname: profile._json.family_name, // eslint-disable-line
-            googleId: profile.id, // eslint-disable-line
-            confirmedEmailToken: 'Active',
+            avatarUrl: profile._json.picture, // eslint-disable-line
+            googleId: profile.id,
+            hashedPassword: newHashedPassword,
+            confirmedEmailToken: 'active',
           });
           done(null, user);
-
         }
       } catch (err) {
-        done(err)
+        done(err);
       }
     }
-  ));
+  )
+);
 
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
-passport.deserializeUser(async (id, user, done) => {
-  await User.findOne(id);
+passport.deserializeUser(async (id, done) => {
+  const user = await User.findOne(id);
   done(null, user);
 });
 

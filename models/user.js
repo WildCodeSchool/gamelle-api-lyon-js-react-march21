@@ -1,7 +1,7 @@
 const argon2 = require('argon2');
 const Joi = require('joi');
 const JoiPhoneNumber = Joi.extend(require('joi-phone-number'));
-const { RecordNotFoundError } = require('../error-types');
+// const { RecordNotFoundError } = require('../error-types');
 const db = require('../db');
 const { API_BACK } = require('../env');
 
@@ -41,7 +41,13 @@ const hashPassword = (plainPassword) => {
 const create = async ({ firstname, lastname, phone, email, password }) => {
   const hashedPassword = await hashPassword(password);
   return db.user.create({
-    data: { firstname, lastname, phone, email, hashedPassword },
+    data: {
+      firstname,
+      lastname,
+      phone,
+      email,
+      hashedPassword,
+    },
   });
 };
 
@@ -113,13 +119,30 @@ const destroy = (id) =>
     .then(() => true)
     .catch(() => false);
 
-const findByGoogleId = async (id, failIfNotFound = true) => {
-  const rows = await db.user.findFirst({ where: { googleId: id } });
-  if (rows.length) {
-    return rows[0];
-  }
-  if (failIfNotFound) throw new RecordNotFoundError();
-  return null;
+const findByGoogleId = (googleId) => {
+  return db.user.findFirst({ where: { googleId } });
+};
+
+const googleCreate = async ({
+  firstname,
+  lastname,
+  avatarUrl,
+  email,
+  googleId,
+  confirmedEmailToken,
+  hashedPassword,
+}) => {
+  return db.user.create({
+    data: {
+      firstname,
+      lastname,
+      avatarUrl,
+      email,
+      googleId,
+      confirmedEmailToken,
+      hashedPassword,
+    },
+  });
 };
 
 module.exports = {
@@ -135,5 +158,6 @@ module.exports = {
   update,
   getSafeAttributes,
   destroy,
-  findByGoogleId
+  findByGoogleId,
+  googleCreate,
 };
