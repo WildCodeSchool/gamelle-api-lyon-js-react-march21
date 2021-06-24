@@ -53,6 +53,7 @@ model Food {
   gamelleId                       Int                 @unique
   brand                           String?             @db.VarChar(255)
   name                            String?             @db.VarChar(255)
+  barcode                         String?             @db.VarChar(255)
   foodTypeId                      Int?
   FoodTypes                       FoodType?           @relation(fields: [foodTypeId], references: [id])
   animalCategoryId                Int?

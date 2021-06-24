@@ -6,34 +6,25 @@ const delayInMilliseconds = 60 * 60 * 1000;
 
 /* ********************** Connection & request to API periodically : Table Breed ********************** */
 const gamelleBreedsRequest = async () => {
-  const firstRequest = await db.breed.findMany();
-
   await axios
     .get(`${API_URL}/breeds`)
     .then((response) => response.data)
     .then((data) => {
       data.data.forEach(async (breed) => {
-        const breedAlreadyExists = firstRequest.filter(
-          (item) => item.gamelleId === breed.id
-        );
-
-        if (breedAlreadyExists.length > 0) {
-          await db.breed.update({
-            where: { gamelleId: breed.id },
-            data: {
-              name: breed.name,
-              speciesId: breed.specie_id,
-            },
-          });
-        } else {
-          await db.breed.create({
-            data: {
-              name: breed.name,
-              gamelleId: breed.id,
-              speciesId: breed.specie_id,
-            },
-          });
-        }
+        await db.breed.upsert({
+          where: {
+            gamelleId: breed.id,
+          },
+          update: {
+            name: breed.name,
+            speciesId: breed.specie_id,
+          },
+          create: {
+            gamelleId: breed.id,
+            name: breed.name,
+            speciesId: breed.specie_id,
+          },
+        });
       });
     });
 
@@ -61,7 +52,7 @@ const gamelleFoodRequest = async () => {
         const foodAlreadyExists = firstRequest.filter(
           (item) => item.gamelleId === food.id
         );
-        const { nom, marque, especes, type } = food;
+        const { nom, marque, especes, type, barcode } = food;
         let WGFoodTypeId = null;
         let WGCategoryId = null;
 
@@ -88,6 +79,7 @@ const gamelleFoodRequest = async () => {
               foodTypeId: WGFoodTypeId,
               animalCategoryId: WGCategoryId,
               image: food.image.replace(/\\/g, ''),
+              barcode,
             },
           });
         } else {
@@ -99,6 +91,7 @@ const gamelleFoodRequest = async () => {
               foodTypeId: WGFoodTypeId,
               animalCategoryId: WGCategoryId,
               image: food.image.replace(/\\/g, ''),
+              barcode,
             },
           });
         }
