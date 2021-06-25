@@ -35,7 +35,7 @@ authRouter.post(
 
 // --------- Log w/ gmail --------- //
 authRouter.post(
-  '/google-login',
+  '/google-book-login',
   asyncHandler(async (req, res, next) => {
     passport.authenticate('local', (err, user) => {
       if (err) res.status(500).send('error');
@@ -72,6 +72,26 @@ authRouter.get(
   })
 );
 
+// --------- Log w/ Facebook --------- //
+authRouter.get(
+  '/facebook',
+  asyncHandler(async (req, res, next) => {
+    passport.authenticate('facebook', {
+      scope: ['email'],
+    })(req, res, next);
+  })
+);
+
+authRouter.get(
+  '/facebook/callback',
+  asyncHandler(async (req, res, next) => {
+    passport.authenticate('facebook', {
+      successRedirect: `${URL_FRONT}/profile`,
+      failureRedirect: `${URL_FRONT}/sign-up`,
+    })(req, res, next);
+  })
+);
+
 // --------- Function for logout --------- //
 authRouter.get('/logout', (req, res) => {
   req.session.destroy((err) => {
@@ -82,5 +102,3 @@ authRouter.get('/logout', (req, res) => {
 });
 
 module.exports = authRouter;
-
-// AUTH_SUCCESS_REDIRECT_URL

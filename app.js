@@ -4,6 +4,7 @@ const session = require('express-session');
 const passport = require('passport');
 const uniqid = require('uniqid');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
 const LocalStrategy = require('passport-local').Strategy;
 const requestsToAPI = require('./requestsToAPI');
 const User = require('./models/user');
@@ -18,6 +19,8 @@ const {
   API_BACK,
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
+  FACEBOOK_CLIENT_ID,
+  FACEBOOK_CLIENT_SECRET,
 } = require('./env');
 
 const sessionStore = require('./sessionStore');
@@ -91,6 +94,42 @@ passport.use(
             lastname: profile._json.family_name, // eslint-disable-line
             avatarUrl: profile._json.picture, // eslint-disable-line
             googleId: profile.id,
+            hashedPassword: newHashedPassword,
+            confirmedEmailToken: 'active',
+          });
+          done(null, user);
+        }
+      } catch (err) {
+        done(err);
+      }
+    }
+  )
+);
+
+passport.use(
+  new FacebookStrategy(
+    {
+      clientID: FACEBOOK_CLIENT_ID,
+      clientSecret: FACEBOOK_CLIENT_SECRET,
+      callbackURL: `${API_BACK}/auth/facebook/callback`,
+      profileFields: ['name', 'email', 'picture.type(large)'],
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        const existingUser = await User.findByFacebookId(
+          profile._json.id, // eslint-disable-line
+          false
+        );
+        if (existingUser) done(null, existingUser);
+        else {
+          const newPassword = uniqid();
+          const newHashedPassword = await User.hashPassword(newPassword);
+          const user = await User.facebookCreate({
+            email: profile._json.email, // eslint-disable-line
+            firstname: profile._json.first_name, // eslint-disable-line
+            lastname: profile._json.last_name, // eslint-disable-line
+            facebookId: profile._json.id, // eslint-disable-line
+            avatarUrl: profile.photos[0].value, // eslint-disable-line
             hashedPassword: newHashedPassword,
             confirmedEmailToken: 'active',
           });

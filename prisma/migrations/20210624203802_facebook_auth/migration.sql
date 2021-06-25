@@ -11,6 +11,7 @@ CREATE TABLE `User` (
     `confirmedEmailToken` VARCHAR(255) NOT NULL DEFAULT 'pending',
     `resetPasswordToken` VARCHAR(255),
     `googleId` VARCHAR(255),
+    `facebookId` VARCHAR(255),
 
     UNIQUE INDEX `User.email_unique`(`email`),
     PRIMARY KEY (`id`)
@@ -52,6 +53,7 @@ CREATE TABLE `Food` (
     `gamelleId` INTEGER NOT NULL,
     `brand` VARCHAR(255),
     `name` VARCHAR(255),
+    `barcode` VARCHAR(255),
     `foodTypeId` INTEGER,
     `animalCategoryId` INTEGER,
     `image` VARCHAR(255),

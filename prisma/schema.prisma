@@ -22,6 +22,7 @@ model User {
   confirmedEmailToken String     @default("pending") @db.VarChar(255)
   resetPasswordToken  String?    @db.VarChar(255)
   googleId            String?    @db.VarChar(255)
+  facebookId          String?    @db.VarChar(255)
   Animals             Animal[]
   History             History[]
   Favorites           Favorite[]

@@ -114,8 +114,7 @@ const getSafeAttributes = (user) => {
 };
 
 const destroy = (id) =>
-
-db.user
+  db.user
     .delete({ where: { id: parseInt(id, 10) } })
 
     .then(() => true)
@@ -147,6 +146,32 @@ const googleCreate = async ({
   });
 };
 
+const findByFacebookId = (facebookId) => {
+  return db.user.findFirst({ where: { facebookId } });
+};
+
+const facebookCreate = async ({
+  firstname,
+  lastname,
+  avatarUrl,
+  email,
+  facebookId,
+  confirmedEmailToken,
+  hashedPassword,
+}) => {
+  return db.user.create({
+    data: {
+      firstname,
+      lastname,
+      avatarUrl,
+      email,
+      facebookId,
+      confirmedEmailToken,
+      hashedPassword,
+    },
+  });
+};
+
 module.exports = {
   findByEmail,
   emailAlreadyExists,
@@ -162,4 +187,6 @@ module.exports = {
   destroy,
   findByGoogleId,
   googleCreate,
+  findByFacebookId,
+  facebookCreate,
 };

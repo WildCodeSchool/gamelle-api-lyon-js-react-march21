@@ -41,6 +41,9 @@ const GOOGLE_CLIENT_SECRET = getEnv(`GOOGLE_CLIENT_SECRET`);
 
 const URL_FRONT = getEnv('URL_FRONT');
 
+const FACEBOOK_CLIENT_ID = getEnv('FACEBOOK_CLIENT_ID');
+const FACEBOOK_CLIENT_SECRET = getEnv('FACEBOOK_CLIENT_SECRET');
+
 module.exports = {
   getEnv,
   inTestEnv,
@@ -65,4 +68,6 @@ module.exports = {
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
   URL_FRONT,
+  FACEBOOK_CLIENT_ID,
+  FACEBOOK_CLIENT_SECRET,
 };
