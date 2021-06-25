@@ -36,21 +36,7 @@ const createHistory = async ({ filters: { userId, foodId } }) => {
   });
 };
 
-/*
-.upsert({
-  where: {
-    userId,
-    foodId,
-  },
-  update: {consultedAt, userId, foodId },
-  create: {
-    consultedAt, userId, foodId 
-  },
-});
-*/
-
 module.exports = {
   createHistory,
   findHistories,
-  // findHistoryDetails,
 };

@@ -1,8 +1,13 @@
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
+const passport = require('passport');
+const uniqid = require('uniqid');
+const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
+const LocalStrategy = require('passport-local').Strategy;
 const requestsToAPI = require('./requestsToAPI');
-
+const User = require('./models/user');
 const {
   PORT,
   CORS_ALLOWED_ORIGINS,
@@ -11,6 +16,11 @@ const {
   SESSION_COOKIE_SECRET,
   SESSION_COOKIE_NAME,
   SESSION_COOKIE_DOMAIN,
+  API_BACK,
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  FACEBOOK_CLIENT_ID,
+  FACEBOOK_CLIENT_SECRET,
 } = require('./env');
 
 const sessionStore = require('./sessionStore');
@@ -50,6 +60,99 @@ app.use(
     },
   })
 );
+
+passport.use(
+  new LocalStrategy(
+    { usernameField: 'email' },
+    async (email, password, done) => {
+      const user = await User.findByEmail(email, false);
+      if (user && (await User.verifyPassword(user, password))) {
+        return done(null, user);
+      }
+      return done(null, false);
+    }
+  )
+);
+
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: GOOGLE_CLIENT_ID,
+      clientSecret: GOOGLE_CLIENT_SECRET,
+      callbackURL: `${API_BACK}/auth/google/callback`,
+    },
+    async (accesToken, resfreshToken, profile, done) => {
+      try {
+        const existingUser = await User.findByGoogleId(profile.id, false);
+        if (existingUser) done(null, existingUser);
+        else {
+          const newPassword = uniqid();
+          const newHashedPassword = await User.hashPassword(newPassword);
+          const user = await User.googleCreate({
+            email: profile._json.email, // eslint-disable-line
+            firstname: profile._json.given_name, // eslint-disable-line
+            lastname: profile._json.family_name, // eslint-disable-line
+            avatarUrl: profile._json.picture, // eslint-disable-line
+            googleId: profile.id,
+            hashedPassword: newHashedPassword,
+            confirmedEmailToken: 'active',
+          });
+          done(null, user);
+        }
+      } catch (err) {
+        done(err);
+      }
+    }
+  )
+);
+
+passport.use(
+  new FacebookStrategy(
+    {
+      clientID: FACEBOOK_CLIENT_ID,
+      clientSecret: FACEBOOK_CLIENT_SECRET,
+      callbackURL: `${API_BACK}/auth/facebook/callback`,
+      profileFields: ['name', 'email', 'picture.type(large)'],
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        const existingUser = await User.findByFacebookId(
+          profile._json.id, // eslint-disable-line
+          false
+        );
+        if (existingUser) done(null, existingUser);
+        else {
+          const newPassword = uniqid();
+          const newHashedPassword = await User.hashPassword(newPassword);
+          const user = await User.facebookCreate({
+            email: profile._json.email, // eslint-disable-line
+            firstname: profile._json.first_name, // eslint-disable-line
+            lastname: profile._json.last_name, // eslint-disable-line
+            facebookId: profile._json.id, // eslint-disable-line
+            avatarUrl: profile.photos[0].value, // eslint-disable-line
+            hashedPassword: newHashedPassword,
+            confirmedEmailToken: 'active',
+          });
+          done(null, user);
+        }
+      } catch (err) {
+        done(err);
+      }
+    }
+  )
+);
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+  const user = await User.findOne(id);
+  done(null, user);
+});
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('/file-storage', express.static('file-storage'));
 
