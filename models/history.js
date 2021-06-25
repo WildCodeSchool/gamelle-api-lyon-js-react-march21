@@ -15,32 +15,42 @@ const findHistories = async (id) => {
   });
 };
 
-const findHistoryDetails = async (id) => {
-  return db.food.findMany({
-    where: {
-      id,
-    },
-  });
-};
-
 const createHistory = async ({ filters: { userId, foodId } }) => {
-  const fav = await db.favorite.findFirst({
+  const consultedAt = new Date();
+
+  const pk = {
+    userId: parseInt(userId, 10),
+    foodId: parseInt(foodId, 10),
+  };
+
+  return db.history.upsert({
     where: {
+      userId_foodId: pk,
+    },
+    update: { consultedAt },
+    create: {
+      consultedAt,
       userId,
       foodId,
     },
   });
-
-  const favoriteId = fav ? fav.id : null;
-  const consultedAt = new Date();
-
-  return db.history.create({
-    data: { consultedAt, userId, foodId, favoriteId },
-  });
 };
+
+/*
+.upsert({
+  where: {
+    userId,
+    foodId,
+  },
+  update: {consultedAt, userId, foodId },
+  create: {
+    consultedAt, userId, foodId 
+  },
+});
+*/
 
 module.exports = {
   createHistory,
   findHistories,
-  findHistoryDetails,
+  // findHistoryDetails,
 };

@@ -88,20 +88,19 @@ model Favorite {
   userId              Int
   Users               User                 @relation(fields: [userId], references: [id])
   foodId              Int
-  FoodHistory         Food                 @relation(fields: [foodId], references: [id])
-  History             History[]
+  Foods               Food                 @relation(fields: [foodId], references: [id])
   AnimalFavoriteFoods AnimalFavoriteFood[]
 }
 
 model History {
-  id          Int       @id @default(autoincrement())
+  // id          Int      @id @default(autoincrement())
   consultedAt DateTime
   userId      Int
-  Users       User      @relation(fields: [userId], references: [id])
+  Users       User     @relation(fields: [userId], references: [id])
   foodId      Int
-  Foods       Food      @relation(fields: [foodId], references: [id])
-  favoriteId  Int?
-  Favorites   Favorite? @relation(fields: [favoriteId], references: [id])
+  Foods       Food     @relation(fields: [foodId], references: [id])
+
+  @@id([userId, foodId])
 }
 
 model AnimalFavoriteFood {
