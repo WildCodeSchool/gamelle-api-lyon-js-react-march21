@@ -93,12 +93,14 @@ model Favorite {
 }
 
 model History {
-  id          Int       @id @default(autoincrement())
+  // id          Int      @id @default(autoincrement())
   consultedAt DateTime
   userId      Int
-  Users       User      @relation(fields: [userId], references: [id])
+  Users       User     @relation(fields: [userId], references: [id])
   foodId      Int
-  Foods       Food      @relation(fields: [foodId], references: [id])
+  Foods       Food     @relation(fields: [foodId], references: [id])
+
+  @@id([userId, foodId])
 }
 
 model AnimalFavoriteFood {

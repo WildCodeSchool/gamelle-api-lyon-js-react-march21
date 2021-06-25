@@ -15,24 +15,42 @@ const findHistories = async (id) => {
   });
 };
 
-const findHistoryDetails = async (id) => {
-  return db.food.findMany({
+const createHistory = async ({ filters: { userId, foodId } }) => {
+  const consultedAt = new Date();
+
+  const pk = {
+    userId: parseInt(userId, 10),
+    foodId: parseInt(foodId, 10),
+  };
+
+  return db.history.upsert({
     where: {
-      id,
+      userId_foodId: pk,
+    },
+    update: { consultedAt },
+    create: {
+      consultedAt,
+      userId,
+      foodId,
     },
   });
 };
 
-const createHistory = async ({ filters: { userId, foodId } }) => {
-  const consultedAt = new Date();
-
-  return db.history.create({
-    data: { consultedAt, userId, foodId },
-  });
-};
+/*
+.upsert({
+  where: {
+    userId,
+    foodId,
+  },
+  update: {consultedAt, userId, foodId },
+  create: {
+    consultedAt, userId, foodId 
+  },
+});
+*/
 
 module.exports = {
   createHistory,
   findHistories,
-  findHistoryDetails,
+  // findHistoryDetails,
 };
