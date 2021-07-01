@@ -5,6 +5,7 @@ const searchesRouter = require('./searches');
 const foodsRouter = require('./foods');
 const historiesRouter = require('./histories');
 const favoritesRouter = require('./favorites');
+const statisticsRouter = require('./statistics');
 
 module.exports = (app) => {
   app.use('/users', userRouter);
@@ -14,4 +15,5 @@ module.exports = (app) => {
   app.use('/foods', foodsRouter);
   app.use('/histories', historiesRouter);
   app.use('/favorites', favoritesRouter);
+  app.use('/statistics', statisticsRouter);
 };

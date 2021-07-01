@@ -92,13 +92,11 @@ CREATE TABLE `Favorite` (
 
 -- CreateTable
 CREATE TABLE `History` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `consultedAt` DATETIME(3) NOT NULL,
     `userId` INTEGER NOT NULL,
     `foodId` INTEGER NOT NULL,
-    `favoriteId` INTEGER,
 
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`userId`, `foodId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -126,6 +124,22 @@ CREATE TABLE `sessions` (
     `data` MEDIUMTEXT,
 
     PRIMARY KEY (`session_id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Statistics` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `userId` INTEGER,
+    `request` VARCHAR(255) NOT NULL,
+    `brand` VARCHAR(255),
+    `foodTypeId` INTEGER,
+    `animalCategoryId` INTEGER,
+    `searchText` MEDIUMTEXT,
+    `foodId` INTEGER,
+    `device` VARCHAR(255),
+    `os` VARCHAR(255),
+
+    PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
@@ -156,9 +170,6 @@ ALTER TABLE `History` ADD FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELE
 ALTER TABLE `History` ADD FOREIGN KEY (`foodId`) REFERENCES `Food`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `History` ADD FOREIGN KEY (`favoriteId`) REFERENCES `Favorite`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE `AnimalFavoriteFood` ADD FOREIGN KEY (`animalId`) REFERENCES `Animal`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -169,3 +180,15 @@ ALTER TABLE `AnimalCurrentFood` ADD FOREIGN KEY (`animalId`) REFERENCES `Animal`
 
 -- AddForeignKey
 ALTER TABLE `AnimalCurrentFood` ADD FOREIGN KEY (`foodId`) REFERENCES `Food`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Statistics` ADD FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Statistics` ADD FOREIGN KEY (`foodTypeId`) REFERENCES `FoodType`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Statistics` ADD FOREIGN KEY (`animalCategoryId`) REFERENCES `AnimalCategory`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Statistics` ADD FOREIGN KEY (`foodId`) REFERENCES `Food`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
