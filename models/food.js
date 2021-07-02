@@ -2,14 +2,14 @@ const axios = require('axios');
 const db = require('../db');
 const { API_URL } = require('../env');
 
-const findBarcode = async (id) => {
+const findProduct = async (id) => {
   const idInt = parseInt(id, 10);
   const product = await db.food.findUnique({
     where: {
       id: idInt,
     },
   });
-  return product.barcode;
+  return product;
 };
 
 const findDetails = async (barcode) => {
@@ -18,4 +18,4 @@ const findDetails = async (barcode) => {
     .then((response) => response.data.data);
 };
 
-module.exports = { findBarcode, findDetails };
+module.exports = { findProduct, findDetails };

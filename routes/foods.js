@@ -5,11 +5,11 @@ foodsRouter.get('/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    const barcode = await Food.findBarcode(id).then((result) => {
+    const product = await Food.findProduct(id).then((result) => {
       return result;
     });
 
-    await Food.findDetails(barcode).then((results) => {
+    await Food.findDetails(product.barcode).then((results) => {
       return res.json(results);
     });
   } catch (err) {
@@ -21,4 +21,13 @@ foodsRouter.get('/:id', async (req, res) => {
       );
   }
 });
+
+foodsRouter.get('/gamelle/:id', async (req, res) => {
+  const { id } = req.params;
+
+  Food.findProduct(id).then((result) => {
+    res.json(result);
+  });
+});
+
 module.exports = foodsRouter;

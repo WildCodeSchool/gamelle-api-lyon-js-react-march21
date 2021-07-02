@@ -2,7 +2,6 @@ const statisticsRouter = require('express').Router();
 const Statistic = require('../models/statistic');
 
 statisticsRouter.post('/', (req, res) => {
-  console.log('dans statistics');
   const {
     userId,
     requestInfo,
