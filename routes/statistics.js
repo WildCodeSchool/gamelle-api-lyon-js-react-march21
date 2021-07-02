@@ -12,6 +12,7 @@ statisticsRouter.post('/', (req, res) => {
     foodId,
     device,
     osName,
+    requestSentAt,
   } = req.body;
 
   return Statistic.createStat({
@@ -25,6 +26,7 @@ statisticsRouter.post('/', (req, res) => {
       foodId,
       device,
       osName,
+      requestSentAt,
     },
   })
     .then((statistic) => {

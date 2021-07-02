@@ -11,6 +11,7 @@ const createStat = async ({
     foodId,
     device,
     osName,
+    requestSentAt,
   },
 }) => {
   return db.statistics.create({
@@ -24,6 +25,7 @@ const createStat = async ({
       foodId,
       device,
       osName,
+      requestSentAt,
     },
   });
 };
