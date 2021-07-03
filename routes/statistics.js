@@ -13,6 +13,8 @@ statisticsRouter.post('/', (req, res) => {
     device,
     osName,
     requestSentAt,
+    ipv4Address,
+    ipv6Address,
   } = req.body;
 
   return Statistic.createStat({
@@ -27,6 +29,8 @@ statisticsRouter.post('/', (req, res) => {
       device,
       osName,
       requestSentAt,
+      ipv4Address,
+      ipv6Address,
     },
   })
     .then((statistic) => {

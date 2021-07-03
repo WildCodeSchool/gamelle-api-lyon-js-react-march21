@@ -12,6 +12,8 @@ const createStat = async ({
     device,
     osName,
     requestSentAt,
+    ipv4Address,
+    ipv6Address,
   },
 }) => {
   return db.statistics.create({
@@ -26,6 +28,8 @@ const createStat = async ({
       device,
       osName,
       requestSentAt,
+      ipv4Address,
+      ipv6Address,
     },
   });
 };
