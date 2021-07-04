@@ -18,6 +18,7 @@ model User {
   email               String       @unique @db.VarChar(255)
   hashedPassword      String       @db.VarChar(255)
   role                String       @default("user") @db.VarChar(255)
+  registeredAt        DateTime
   avatarUrl           String?      @db.VarChar(255)
   confirmedEmailToken String       @default("pending") @db.VarChar(255)
   resetPasswordToken  String?      @db.VarChar(255)

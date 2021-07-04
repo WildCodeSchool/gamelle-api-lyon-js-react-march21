@@ -44,7 +44,6 @@ const URL_FRONT = getEnv('URL_FRONT');
 const FACEBOOK_CLIENT_ID = getEnv('FACEBOOK_CLIENT_ID');
 const FACEBOOK_CLIENT_SECRET = getEnv('FACEBOOK_CLIENT_SECRET');
 
-const GEOLOCATION_DB_KEY = getEnv('GEOLOCATION_DB_KEY');
 module.exports = {
   getEnv,
   inTestEnv,
@@ -71,5 +70,4 @@ module.exports = {
   URL_FRONT,
   FACEBOOK_CLIENT_ID,
   FACEBOOK_CLIENT_SECRET,
-  GEOLOCATION_DB_KEY,
 };

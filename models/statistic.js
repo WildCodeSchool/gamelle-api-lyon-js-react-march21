@@ -35,7 +35,22 @@ const createStat = async ({
 };
 
 const findStatistics = async () => {
-  return db.statistics.findMany();
+  return db.statistics.findMany({
+    include: {
+      Users: {
+        select: {
+          firstname: true,
+          lastname: true,
+          email: true,
+          role: true,
+          registeredAt: true,
+        },
+      },
+      FoodTypes: true,
+      AnimalCategories: true,
+      Foods: true,
+    },
+  });
 };
 
 module.exports = {

@@ -49,7 +49,14 @@ const hashPassword = (plainPassword) => {
 };
 
 // ---------Creation d'une fonction pour creer un user--------- //
-const create = async ({ firstname, lastname, phone, email, password }) => {
+const create = async ({
+  firstname,
+  lastname,
+  phone,
+  email,
+  password,
+  registeredAt,
+}) => {
   const hashedPassword = await hashPassword(password);
   return db.user.create({
     data: {
@@ -58,6 +65,7 @@ const create = async ({ firstname, lastname, phone, email, password }) => {
       phone,
       email,
       hashedPassword,
+      registeredAt,
     },
   });
 };
@@ -104,6 +112,7 @@ const validate = (data, forUpdate = false) =>
     password: Joi.string()
       .min(8)
       .presence(forUpdate ? 'optional' : 'required'),
+    registeredAt: Joi.date().presence('required'),
     avatarUrl: Joi.string().max(255).allow(null, ''),
     googleId: Joi.string(),
   }).validate(data, { abortEarly: false }).error;
