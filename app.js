@@ -96,6 +96,7 @@ passport.use(
             googleId: profile.id,
             hashedPassword: newHashedPassword,
             confirmedEmailToken: 'active',
+            registeredAt: new Date(),
           });
           done(null, user);
         }
@@ -132,6 +133,7 @@ passport.use(
             avatarUrl: profile.photos[0].value, // eslint-disable-line
             hashedPassword: newHashedPassword,
             confirmedEmailToken: 'active',
+            registeredAt: new Date(),
           });
           done(null, user);
         }

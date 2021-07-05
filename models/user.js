@@ -155,6 +155,7 @@ const googleCreate = async ({
   googleId,
   confirmedEmailToken,
   hashedPassword,
+  registeredAt,
 }) => {
   return db.user.create({
     data: {
@@ -165,6 +166,7 @@ const googleCreate = async ({
       googleId,
       confirmedEmailToken,
       hashedPassword,
+      registeredAt,
     },
   });
 };
@@ -181,6 +183,7 @@ const facebookCreate = async ({
   facebookId,
   confirmedEmailToken,
   hashedPassword,
+  registeredAt,
 }) => {
   return db.user.create({
     data: {
@@ -191,6 +194,7 @@ const facebookCreate = async ({
       facebookId,
       confirmedEmailToken,
       hashedPassword,
+      registeredAt,
     },
   });
 };
