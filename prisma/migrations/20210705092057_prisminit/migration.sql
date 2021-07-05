@@ -7,6 +7,7 @@ CREATE TABLE `User` (
     `email` VARCHAR(255) NOT NULL,
     `hashedPassword` VARCHAR(255) NOT NULL,
     `role` VARCHAR(255) NOT NULL DEFAULT 'user',
+    `registeredAt` DATETIME(3) NOT NULL,
     `avatarUrl` VARCHAR(255),
     `confirmedEmailToken` VARCHAR(255) NOT NULL DEFAULT 'pending',
     `resetPasswordToken` VARCHAR(255),
@@ -129,15 +130,18 @@ CREATE TABLE `sessions` (
 -- CreateTable
 CREATE TABLE `Statistics` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `requestSentAt` DATETIME(3) NOT NULL,
     `userId` INTEGER,
-    `request` VARCHAR(255) NOT NULL,
+    `requestInfo` VARCHAR(255) NOT NULL,
     `brand` VARCHAR(255),
     `foodTypeId` INTEGER,
     `animalCategoryId` INTEGER,
     `searchText` MEDIUMTEXT,
     `foodId` INTEGER,
     `device` VARCHAR(255),
-    `os` VARCHAR(255),
+    `osName` VARCHAR(255),
+    `ipv4Address` VARCHAR(255),
+    `ipv6Address` VARCHAR(255),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
