@@ -4,15 +4,18 @@ const requireCurrentUser = require('../middlewares/requireCurrentUser');
 
 historiesRouter.get('/', requireCurrentUser, async (req, res) => {
   const { id } = req.currentUser;
-
-  try {
-    const historyData = await History.findHistories(id);
-    return res.json(historyData);
-  } catch (err) {
-    console.log(err);
-    return res
-      .status(500)
-      .send("Il y a eu une erreur lors de la récupération de l'historique");
+  if (req.currentUser) {
+    try {
+      const historyData = await History.findHistories(id);
+      return res.json(historyData);
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .send("Il y a eu une erreur lors de la récupération de l'historique");
+    }
+  } else {
+    return res.json([]);
   }
 });
 

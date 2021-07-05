@@ -118,19 +118,22 @@ const validate = (data, forUpdate = false) =>
   }).validate(data, { abortEarly: false }).error;
 
 const getSafeAttributes = (user) => {
-  let { avatarUrl } = user;
-  if (
-    avatarUrl &&
-    !avatarUrl.startsWith('http://') &&
-    !avatarUrl.startsWith('https://')
-  ) {
-    avatarUrl = `${API_BACK}/${avatarUrl}`;
+  if (user) {
+    let { avatarUrl } = user;
+    if (
+      avatarUrl &&
+      !avatarUrl.startsWith('http://') &&
+      !avatarUrl.startsWith('https://')
+    ) {
+      avatarUrl = `${API_BACK}/${avatarUrl}`;
+    }
+    return {
+      ...user,
+      avatarUrl,
+      hashedPassword: undefined,
+    };
   }
-  return {
-    ...user,
-    avatarUrl,
-    hashedPassword: undefined,
-  };
+  return {};
 };
 
 const destroy = (id) =>
