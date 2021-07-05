@@ -19,8 +19,10 @@ model User {
   hashedPassword      String     @db.VarChar(255)
   role                String     @default("user") @db.VarChar(255)
   avatarUrl           String?    @db.VarChar(255)
-  confirmedEmailToken String     @default("Pending") @db.VarChar(255)
+  confirmedEmailToken String     @default("pending") @db.VarChar(255)
   resetPasswordToken  String?    @db.VarChar(255)
+  googleId            String?    @db.VarChar(255)
+  facebookId          String?    @db.VarChar(255)
   Animals             Animal[]
   History             History[]
   Favorites           Favorite[]

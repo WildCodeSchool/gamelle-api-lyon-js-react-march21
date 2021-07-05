@@ -55,7 +55,7 @@ usersRouter.post(
     const user = await User.findOne(userId);
     if (user && (await User.verifyPassword(token, user.confirmedEmailToken))) {
       await User.update(user.id, {
-        confirmedEmailToken: 'Active',
+        confirmedEmailToken: 'active',
       });
       res.sendStatus(200);
     } else {
