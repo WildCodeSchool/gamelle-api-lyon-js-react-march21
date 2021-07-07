@@ -81,8 +81,49 @@ const findStatsByDates = ({ filters: { statsStartDate, statsEndDate } }) => {
   });
 };
 
+const findNbReqByDates = ({ filters: { statsStartDate, statsEndDate } }) => {
+  return db.statistics.groupBy({
+    by: ['requestInfo'],
+    _count: {
+      requestInfo: true,
+    },
+    where: {
+      requestSentAt: {
+        gte: statsStartDate,
+        lte: statsEndDate,
+      },
+    },
+  });
+};
+
+const findMostShowedProductsByDates = ({
+  filters: { statsStartDate, statsEndDate },
+}) => {
+  return db.statistics.groupBy({
+    by: ['foodId'],
+    _count: {
+      foodId: true,
+    },
+
+    // orderBy: {
+    //   _count: {
+    //     foodId: 'desc',
+    //   },
+    // },
+    where: {
+      requestSentAt: {
+        gte: statsStartDate,
+        lte: statsEndDate,
+      },
+      NOT: [{ foodId: null }],
+    },
+  });
+};
+
 module.exports = {
   createStat,
   findAllStatistics,
   findStatsByDates,
+  findNbReqByDates,
+  findMostShowedProductsByDates,
 };
