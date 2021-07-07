@@ -7,6 +7,7 @@ const historiesRouter = require('./histories');
 const favoritesRouter = require('./favorites');
 const petsRouter = require('./pets');
 const currentPetRouter = require('./currentPet');
+const statisticsRouter = require('./statistics');
 
 module.exports = (app) => {
   app.use('/users', userRouter);
@@ -18,4 +19,5 @@ module.exports = (app) => {
   app.use('/favorites', favoritesRouter);
   app.use('/animal', petsRouter);
   app.use('/currentPet', currentPetRouter);
+  app.use('/statistics', statisticsRouter);
 };

@@ -11,26 +11,31 @@ datasource db {
 }
 
 model User {
-  id                  Int        @id @default(autoincrement())
-  firstname           String     @db.VarChar(255)
-  lastname            String     @db.VarChar(255)
-  phone               String?    @db.VarChar(20)
-  email               String     @unique @db.VarChar(255)
-  hashedPassword      String     @db.VarChar(255)
-  role                String     @default("user") @db.VarChar(255)
-  avatarUrl           String?    @db.VarChar(255)
-  confirmedEmailToken String     @default("Pending") @db.VarChar(255)
-  resetPasswordToken  String?    @db.VarChar(255)
+  id                  Int          @id @default(autoincrement())
+  firstname           String       @db.VarChar(255)
+  lastname            String       @db.VarChar(255)
+  phone               String?      @db.VarChar(20)
+  email               String       @unique @db.VarChar(255)
+  hashedPassword      String       @db.VarChar(255)
+  role                String       @default("user") @db.VarChar(255)
+  registeredAt        DateTime
+  avatarUrl           String?      @db.VarChar(255)
+  confirmedEmailToken String       @default("pending") @db.VarChar(255)
+  resetPasswordToken  String?      @db.VarChar(255)
+  googleId            String?      @db.VarChar(255)
+  facebookId          String?      @db.VarChar(255)
   Animals             Animal[]
   History             History[]
   Favorites           Favorite[]
+  Statistics          Statistics[]
 }
 
 model AnimalCategory {
-  id      Int      @id @default(autoincrement())
-  name    String   @unique @db.VarChar(255)
-  Foods   Food[]
-  Animals Animal[]
+  id         Int          @id @default(autoincrement())
+  name       String       @unique @db.VarChar(255)
+  Foods      Food[]
+  Animals    Animal[]
+  Statistics Statistics[]
 }
 
 model Breed {
@@ -42,9 +47,10 @@ model Breed {
 }
 
 model FoodType {
-  id    Int    @id @default(autoincrement())
-  name  String @unique @db.VarChar(255)
-  Foods Food[]
+  id         Int          @id @default(autoincrement())
+  name       String       @unique @db.VarChar(255)
+  Foods      Food[]
+  Statistics Statistics[]
 }
 
 model Food {
@@ -67,6 +73,7 @@ model Food {
   History                         History[]
   Favorites                       Favorite[]
   AnimalCurrentFoods              AnimalCurrentFood[]
+  Statistics                      Statistics[]
 }
 
 model Animal {
@@ -93,7 +100,6 @@ model Favorite {
 }
 
 model History {
-  // id          Int      @id @default(autoincrement())
   consultedAt DateTime
   userId      Int
   Users       User     @relation(fields: [userId], references: [id])
@@ -123,4 +129,24 @@ model sessions {
   session_id String  @id @db.VarChar(128)
   expires    Int     @db.UnsignedInt
   data       String? @db.MediumText
+}
+
+model Statistics {
+  id               Int             @id @default(autoincrement())
+  requestSentAt    DateTime
+  userId           Int?
+  Users            User?           @relation(fields: [userId], references: [id])
+  requestInfo      String          @db.VarChar(255)
+  brand            String?         @db.VarChar(255)
+  foodTypeId       Int?
+  FoodTypes        FoodType?       @relation(fields: [foodTypeId], references: [id])
+  animalCategoryId Int?
+  AnimalCategories AnimalCategory? @relation(fields: [animalCategoryId], references: [id])
+  searchText       String?         @db.MediumText
+  foodId           Int?
+  Foods            Food?           @relation(fields: [foodId], references: [id])
+  device           String?         @db.VarChar(255)
+  osName           String?         @db.VarChar(255)
+  ipv4Address      String?         @db.VarChar(255)
+  ipv6Address      String?         @db.VarChar(255)
 }
