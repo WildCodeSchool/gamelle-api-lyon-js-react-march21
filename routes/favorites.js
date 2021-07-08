@@ -5,28 +5,36 @@ const { RecordNotFoundError } = require('../error-types');
 const requireCurrentUser = require('../middlewares/requireCurrentUser');
 
 favoritesRouter.get('/', requireCurrentUser, async (req, res) => {
-  const { id } = req.currentUser;
-  try {
-    const favoriteData = await Favorite.findFavorites(id);
-    return res.json(favoriteData);
-  } catch (err) {
-    console.log(err);
-    return res
-      .status(500)
-      .send('Il y a eu une erreur lors de la récupération des favoris');
+  if (req.currentUser) {
+    const { id } = req.currentUser;
+    try {
+      const favoriteData = await Favorite.findFavorites(id);
+      return res.json(favoriteData);
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .send('Il y a eu une erreur lors de la récupération des favoris');
+    }
+  } else {
+    return res.json([]);
   }
 });
 
 favoritesRouter.get('/listfav', requireCurrentUser, async (req, res) => {
-  const { id } = req.currentUser;
-  try {
-    const FavoriteData = await Favorite.findListOfFavorites(id);
-    return res.json(FavoriteData);
-  } catch (err) {
-    console.log(err);
-    return res
-      .status(500)
-      .send('Il y a eu une erreur lors de la récupération des favoris');
+  if (req.currentUser) {
+    const { id } = req.currentUser;
+    try {
+      const FavoriteData = await Favorite.findListOfFavorites(id);
+      return res.json(FavoriteData);
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .send('Il y a eu une erreur lors de la récupération des favoris');
+    }
+  } else {
+    return res.json([]);
   }
 });
 

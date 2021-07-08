@@ -1,6 +1,7 @@
 const argon2 = require('argon2');
 const Joi = require('joi');
 const JoiPhoneNumber = Joi.extend(require('joi-phone-number'));
+// const { RecordNotFoundError } = require('../error-types');
 const db = require('../db');
 const { API_BACK } = require('../env');
 
@@ -47,11 +48,25 @@ const hashPassword = (plainPassword) => {
   return argon2.hash(plainPassword, hashingOptions);
 };
 
-// ---------Creation d'une fonction pour creer un email--------- //
-const create = async ({ firstname, lastname, phone, email, password }) => {
+// ---------Creation d'une fonction pour creer un user--------- //
+const create = async ({
+  firstname,
+  lastname,
+  phone,
+  email,
+  password,
+  registeredAt,
+}) => {
   const hashedPassword = await hashPassword(password);
   return db.user.create({
-    data: { firstname, lastname, phone, email, hashedPassword },
+    data: {
+      firstname,
+      lastname,
+      phone,
+      email,
+      hashedPassword,
+      registeredAt,
+    },
   });
 };
 
@@ -97,32 +112,92 @@ const validate = (data, forUpdate = false) =>
     password: Joi.string()
       .min(8)
       .presence(forUpdate ? 'optional' : 'required'),
+    registeredAt: Joi.date().presence('required'),
     avatarUrl: Joi.string().max(255).allow(null, ''),
+    googleId: Joi.string(),
   }).validate(data, { abortEarly: false }).error;
 
 const getSafeAttributes = (user) => {
-  let { avatarUrl } = user;
-  if (
-    avatarUrl &&
-    !avatarUrl.startsWith('http://') &&
-    !avatarUrl.startsWith('https://')
-  ) {
-    avatarUrl = `${API_BACK}/${avatarUrl}`;
+  if (user) {
+    let { avatarUrl } = user;
+    if (
+      avatarUrl &&
+      !avatarUrl.startsWith('http://') &&
+      !avatarUrl.startsWith('https://')
+    ) {
+      avatarUrl = `${API_BACK}/${avatarUrl}`;
+    }
+    return {
+      ...user,
+      avatarUrl,
+      hashedPassword: undefined,
+    };
   }
-  return {
-    ...user,
-    avatarUrl,
-    hashedPassword: undefined,
-  };
+  return {};
 };
 
 const destroy = (id) =>
-
-db.user
+  db.user
     .delete({ where: { id: parseInt(id, 10) } })
 
     .then(() => true)
     .catch(() => false);
+
+const findByGoogleId = (googleId) => {
+  return db.user.findFirst({ where: { googleId } });
+};
+
+const googleCreate = async ({
+  firstname,
+  lastname,
+  avatarUrl,
+  email,
+  googleId,
+  confirmedEmailToken,
+  hashedPassword,
+  registeredAt,
+}) => {
+  return db.user.create({
+    data: {
+      firstname,
+      lastname,
+      avatarUrl,
+      email,
+      googleId,
+      confirmedEmailToken,
+      hashedPassword,
+      registeredAt,
+    },
+  });
+};
+
+const findByFacebookId = (facebookId) => {
+  return db.user.findFirst({ where: { facebookId } });
+};
+
+const facebookCreate = async ({
+  firstname,
+  lastname,
+  avatarUrl,
+  email,
+  facebookId,
+  confirmedEmailToken,
+  hashedPassword,
+  registeredAt,
+}) => {
+  return db.user.create({
+    data: {
+      firstname,
+      lastname,
+      avatarUrl,
+      email,
+      facebookId,
+      confirmedEmailToken,
+      hashedPassword,
+      registeredAt,
+    },
+  });
+};
 
 module.exports = {
   findByEmail,
@@ -137,5 +212,8 @@ module.exports = {
   update,
   getSafeAttributes,
   destroy,
-
+  findByGoogleId,
+  googleCreate,
+  findByFacebookId,
+  facebookCreate,
 };

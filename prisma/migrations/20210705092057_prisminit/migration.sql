@@ -7,9 +7,12 @@ CREATE TABLE `User` (
     `email` VARCHAR(255) NOT NULL,
     `hashedPassword` VARCHAR(255) NOT NULL,
     `role` VARCHAR(255) NOT NULL DEFAULT 'user',
+    `registeredAt` DATETIME(3) NOT NULL,
     `avatarUrl` VARCHAR(255),
-    `confirmedEmailToken` VARCHAR(255) NOT NULL DEFAULT 'Pending',
+    `confirmedEmailToken` VARCHAR(255) NOT NULL DEFAULT 'pending',
     `resetPasswordToken` VARCHAR(255),
+    `googleId` VARCHAR(255),
+    `facebookId` VARCHAR(255),
 
     UNIQUE INDEX `User.email_unique`(`email`),
     PRIMARY KEY (`id`)
@@ -90,13 +93,11 @@ CREATE TABLE `Favorite` (
 
 -- CreateTable
 CREATE TABLE `History` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `consultedAt` DATETIME(3) NOT NULL,
     `userId` INTEGER NOT NULL,
     `foodId` INTEGER NOT NULL,
-    `favoriteId` INTEGER,
 
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`userId`, `foodId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -126,26 +127,30 @@ CREATE TABLE `sessions` (
     PRIMARY KEY (`session_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- AddForeignKey
-ALTER TABLE `History` ADD FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+-- CreateTable
+CREATE TABLE `Statistics` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `requestSentAt` DATETIME(3) NOT NULL,
+    `userId` INTEGER,
+    `requestInfo` VARCHAR(255) NOT NULL,
+    `brand` VARCHAR(255),
+    `foodTypeId` INTEGER,
+    `animalCategoryId` INTEGER,
+    `searchText` MEDIUMTEXT,
+    `foodId` INTEGER,
+    `device` VARCHAR(255),
+    `osName` VARCHAR(255),
+    `ipv4Address` VARCHAR(255),
+    `ipv6Address` VARCHAR(255),
 
--- AddForeignKey
-ALTER TABLE `History` ADD FOREIGN KEY (`foodId`) REFERENCES `Food`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `History` ADD FOREIGN KEY (`favoriteId`) REFERENCES `Favorite`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
 ALTER TABLE `Food` ADD FOREIGN KEY (`foodTypeId`) REFERENCES `FoodType`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Food` ADD FOREIGN KEY (`animalCategoryId`) REFERENCES `AnimalCategory`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `AnimalFavoriteFood` ADD FOREIGN KEY (`animalId`) REFERENCES `Animal`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `AnimalFavoriteFood` ADD FOREIGN KEY (`favoriteId`) REFERENCES `Favorite`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Animal` ADD FOREIGN KEY (`ownerId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -157,13 +162,37 @@ ALTER TABLE `Animal` ADD FOREIGN KEY (`animalCategoryId`) REFERENCES `AnimalCate
 ALTER TABLE `Animal` ADD FOREIGN KEY (`breedId`) REFERENCES `Breed`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `Favorite` ADD FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Favorite` ADD FOREIGN KEY (`foodId`) REFERENCES `Food`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `History` ADD FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `History` ADD FOREIGN KEY (`foodId`) REFERENCES `Food`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `AnimalFavoriteFood` ADD FOREIGN KEY (`animalId`) REFERENCES `Animal`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `AnimalFavoriteFood` ADD FOREIGN KEY (`favoriteId`) REFERENCES `Favorite`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `AnimalCurrentFood` ADD FOREIGN KEY (`animalId`) REFERENCES `Animal`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `AnimalCurrentFood` ADD FOREIGN KEY (`foodId`) REFERENCES `Food`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Favorite` ADD FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `Statistics` ADD FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Favorite` ADD FOREIGN KEY (`foodId`) REFERENCES `Food`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `Statistics` ADD FOREIGN KEY (`foodTypeId`) REFERENCES `FoodType`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Statistics` ADD FOREIGN KEY (`animalCategoryId`) REFERENCES `AnimalCategory`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Statistics` ADD FOREIGN KEY (`foodId`) REFERENCES `Food`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
