@@ -29,11 +29,9 @@ statisticsRouter.post('/', deviceDetails, async (req, res) => {
 
   (async () => {
     console.log('ipv4   ', await publicIp.v4());
-    // console.log('ipv6   ', await publicIp.v6());
   })();
 
   const ipv4Address = (await publicIp.v4()) || null;
-  // const ipv6Address = await publicIp.v6();
 
   const {
     userId,
@@ -60,7 +58,6 @@ statisticsRouter.post('/', deviceDetails, async (req, res) => {
         osName,
         requestSentAt,
         ipv4Address,
-        ipv6Address: null,
       },
     });
     res.json(statistic);

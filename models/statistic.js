@@ -13,7 +13,6 @@ const createStat = async ({
     osName,
     requestSentAt,
     ipv4Address,
-    ipv6Address,
   },
 }) => {
   return db.statistics.create({
@@ -29,7 +28,6 @@ const createStat = async ({
       osName,
       requestSentAt,
       ipv4Address,
-      ipv6Address,
     },
   });
 };
@@ -104,12 +102,11 @@ const findMostShowedProductsByDates = ({
     _count: {
       foodId: true,
     },
-
-    // orderBy: {
-    //   _count: {
-    //     foodId: 'desc',
-    //   },
-    // },
+    orderBy: {
+      _count: {
+        foodId: 'desc',
+      },
+    },
     where: {
       requestSentAt: {
         gte: statsStartDate,
