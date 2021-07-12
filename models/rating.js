@@ -1,8 +1,17 @@
 const db = require('../db');
 
 const createRat = async ({ userId, foodId, appetance, selle, digestion }) => {
-  return db.rating.create({
-    data: {
+  const pk = {
+    userId: parseInt(userId, 10),
+    foodId: parseInt(foodId, 10),
+  };
+
+  return db.rating.upsert({
+    where: {
+      userId_foodId: pk,
+    },
+    update: { appetance, selle, digestion },
+    create: {
       userId,
       foodId,
       appetance,

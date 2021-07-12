@@ -154,7 +154,6 @@ model Statistics {
 }
 
 model Rating {
-  id        Int  @id @default(autoincrement())
   appetance Int?
   selle     Int?
   digestion Int?
@@ -163,4 +162,5 @@ model Rating {
   foodId    Int
   foods     Food @relation(fields: [foodId], references: [id])
 
+  @@id([userId, foodId])
 }
