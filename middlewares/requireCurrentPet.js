@@ -1,9 +1,9 @@
-const Animal = require('../models/pet');
+const Pet = require('../models/pet');
 
 module.exports = async (req, res, next) => {
-  const { AnimalId } = req.session;
+  const { petId } = req.session;
   try {
-    req.currentPet = await Animal.findOne(AnimalId);
+    req.currentPet = await Pet.findOne(petId);
   } catch (err) {
     return res.sendStatus(401);
   }

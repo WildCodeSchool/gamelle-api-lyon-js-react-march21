@@ -1,69 +1,93 @@
 const Joi = require('joi');
-// const JoiPhoneNumber = Joi.extend(require('joi-phone-number'));
 const db = require('../db');
-const { API_BACK } = require('../env');
+// const { API_BACK } = require('../env');
 
-const findOne = (id) => db.user.findUnique({ where: { id: parseInt(id, 10) } });
+// const findOne = (id) => db.animal.findUnique({ where: { id } });
+// const { findMany } = db.animal;
 
-const { findMany } = db.user;
-
-// ---------Creation d'une fonction pour mettre à jour les données de l'utilisateur--------- //
-const update = async (id, data) =>
-  db.user.update({
-    where: { id: parseInt(id, 10) },
-    data: {
-      ...data,
-      image:
-        typeof data.image === 'string'
-          ? data.image.replace(`${API_BACK}/`, '')
-          : data.image,
-    },
+const findBreeds = () => {
+  return db.breed.findMany({
+    distinct: ['name'],
+    orderBy: [
+      {
+        name: 'asc',
+      },
+    ],
   });
+};
+
+const findAnimalCategories = () => {
+  return db.animalCategory.findMany({
+    distinct: ['name'],
+    orderBy: [
+      {
+        name: 'asc',
+      },
+    ],
+  });
+};
+
+// ---------Creation d'une fonction pour mettre à jour les données de l'animal--------- //
+// const update = async (id, data) =>
+//   db.animal.update({
+//     where: { id: parseInt(id, 10) },
+//     data: {
+//       ...data,
+//       image:
+//         typeof data.image === 'string'
+//           ? data.image.replace(`${API_BACK}/`, '')
+//           : data.image,
+//     },
+//   });
 
 // ---------Creation d'une fonction validation avec Joi--------- //
 const validate = (data, forUpdate = false) =>
   Joi.object({
+    image: Joi.string().max(255).allow(null, ''),
     name: Joi.string()
       .min(1)
       .max(255)
       .presence(forUpdate ? 'optional' : 'required'),
-    image: Joi.string().max(255).allow(null, ''),
   }).validate(data, { abortEarly: false }).error;
 
-const getSafeAttributes = (pet) => {
-  let { image } = pet;
-  if (image && !image.startsWith('http://') && !image.startsWith('https://')) {
-    image = `${API_BACK}/${image}`;
-  }
-  return {
-    ...image,
-  };
-};
+// const getSafeAttributes = (pet) => {
+//   let { image } = pet;
+//   if (image && !image.startsWith('http://') && !image.startsWith('https://')) {
+//     image = `${API_BACK}/${image}`;
+//   }
+//   return {
+//     ...image,
+//   };
+// };
 
-const create = async ({ name, image }) => {
-  return db.pet.create({
-    data: { name, image },
+const createPet = async ({
+  petId,
+  ownerId,
+  image,
+  name,
+  breedId,
+  animalCategoryId,
+}) => {
+  return db.animal.createPet({
+    data: { petId, ownerId, image, name, breedId, animalCategoryId },
   });
 };
 
-const destroy = (id) =>
-  db.pet
-    .delete({ where: { id: parseInt(id, 10) } })
+// const destroy = (id) =>
+//   db.animal
+//     .delete({ where: { id: parseInt(id, 10) } })
 
-    .then(() => true)
-    .catch(() => false);
+//     .then(() => true)
+//     .catch(() => false);
 
 module.exports = {
-  // findByEmail,
-  // emailAlreadyExists,
-  // phoneAlreadyExist,
-  // hashPassword,
-  create,
-  // verifyPassword,
+  findBreeds,
+  findAnimalCategories,
+  createPet,
   validate,
-  findOne,
-  findMany,
-  update,
-  getSafeAttributes,
-  destroy,
+  // findOne,
+  // findMany,
+  // update,
+  // getSafeAttributes,
+  // destroy,
 };

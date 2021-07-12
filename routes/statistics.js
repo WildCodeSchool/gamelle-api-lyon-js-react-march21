@@ -24,8 +24,8 @@ statisticsRouter.post('/', deviceDetails, async (req, res) => {
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
   console.log('ip ', ip);
-  console.log('req.headers  ', req.headers['x-forwarded-for']);
-  console.log('req.socket  ', req.socket.remoteAddress);
+  // console.log('req.headers  ', req.headers['x-forwarded-for']);
+  // console.log('req.socket  ', req.socket.remoteAddress);
 
   (async () => {
     console.log('ipv4   ', await publicIp.v4());

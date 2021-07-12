@@ -17,7 +17,7 @@ module.exports = (app) => {
   app.use('/foods', foodsRouter);
   app.use('/histories', historiesRouter);
   app.use('/favorites', favoritesRouter);
-  app.use('/animal', petsRouter);
+  app.use('/pets', petsRouter);
   app.use('/currentPet', currentPetRouter);
   app.use('/statistics', statisticsRouter);
 };
