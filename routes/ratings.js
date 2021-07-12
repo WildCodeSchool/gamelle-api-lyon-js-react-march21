@@ -27,4 +27,18 @@ RatingsRouter.post(
   })
 );
 
+RatingsRouter.get(
+  '/:foodId',
+  asyncHandler(async (req, res) => {
+    const foodId = parseInt(req.params.foodId, 10);
+    try {
+      const allRating = await Rating.findOneRating(foodId);
+      res.status(200).send(allRating);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send(error);
+    }
+  })
+);
+
 module.exports = RatingsRouter;
