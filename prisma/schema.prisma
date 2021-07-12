@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["orderByAggregateGroup"]
 }
 
 datasource db {
@@ -150,7 +151,6 @@ model Statistics {
   device           String?         @db.VarChar(255)
   osName           String?         @db.VarChar(255)
   ipv4Address      String?         @db.VarChar(255)
-  ipv6Address      String?         @db.VarChar(255)
 }
 
 model Rating {
