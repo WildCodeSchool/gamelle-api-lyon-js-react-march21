@@ -8,10 +8,12 @@ const deviceDetails = app.use(useragent.express());
 
 const statisticsRouter = require('express').Router();
 const Statistic = require('../models/statistic');
+const Food = require('../models/food');
+const User = require('../models/user');
+
 const requireCurrentUser = require('../middlewares/requireCurrentUser');
 
 statisticsRouter.post('/', deviceDetails, async (req, res) => {
-  // console.log(req.useragent);
   let device = null;
   if (req.useragent.isMobile) {
     device = 'mobile';
@@ -21,16 +23,6 @@ statisticsRouter.post('/', deviceDetails, async (req, res) => {
     device = 'desktop';
   }
   const osName = req.useragent.os;
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-
-  console.log('ip ', ip);
-  console.log('req.headers  ', req.headers['x-forwarded-for']);
-  console.log('req.socket  ', req.socket.remoteAddress);
-
-  (async () => {
-    console.log('ipv4   ', await publicIp.v4());
-  })();
-
   const ipv4Address = (await publicIp.v4()) || null;
 
   const {
@@ -72,7 +64,6 @@ statisticsRouter.post('/', deviceDetails, async (req, res) => {
 });
 
 statisticsRouter.get('/', requireCurrentUser, async (req, res) => {
-  console.log(req.currentUser);
   if (req.currentUser) {
     try {
       const statisticsData = await Statistic.findAllStatistics();
@@ -121,6 +112,59 @@ statisticsRouter.post('/numberReqDates', async (req, res) => {
   }
 });
 
+statisticsRouter.post('/numberFoodTypesDates', async (req, res) => {
+  const { statsStartDate, statsEndDate } = req.body;
+
+  try {
+    const statistic = await Statistic.findNbFoodTypesByDates({
+      filters: { statsStartDate, statsEndDate },
+    });
+
+    const statisticWithFood = await Promise.all(
+      statistic.map(async (stat) => {
+        const product = await Food.findFoodTypeName(stat.foodTypeId).then(
+          (result) => {
+            return result;
+          }
+        );
+        return { ...stat, ...product };
+      })
+    );
+    res.json(statisticWithFood);
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .send('Il y a eu une erreur lors de la récupération de ces statistiques');
+  }
+});
+
+statisticsRouter.post('/numberAnimalCategoriesDates', async (req, res) => {
+  const { statsStartDate, statsEndDate } = req.body;
+
+  try {
+    const statistic = await Statistic.findAnimalCategoriesByDates({
+      filters: { statsStartDate, statsEndDate },
+    });
+    const statisticWithFood = await Promise.all(
+      statistic.map(async (stat) => {
+        const product = await Food.findAnimalCategoryName(
+          stat.animalCategoryId
+        ).then((result) => {
+          return result;
+        });
+        return { ...stat, ...product };
+      })
+    );
+    res.json(statisticWithFood);
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .send('Il y a eu une erreur lors de la récupération de ces statistiques');
+  }
+});
+
 statisticsRouter.post('/mostShowedProducts', async (req, res) => {
   const { statsStartDate, statsEndDate } = req.body;
 
@@ -128,7 +172,91 @@ statisticsRouter.post('/mostShowedProducts', async (req, res) => {
     const statistic = await Statistic.findMostShowedProductsByDates({
       filters: { statsStartDate, statsEndDate },
     });
+
+    const statisticWithFood = await Promise.all(
+      statistic.map(async (stat) => {
+        const product = await Food.findProduct(stat.foodId).then((result) => {
+          return result;
+        });
+        return { ...stat, ...product };
+      })
+    );
+    res.json(statisticWithFood);
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .send('Il y a eu une erreur lors de la récupération de ces statistiques');
+  }
+});
+
+statisticsRouter.post('/currentMostFavoriteProducts', async (req, res) => {
+  try {
+    const statistic = await Statistic.findCurrentMostFavoriteProducts();
+
+    const statisticWithFood = await Promise.all(
+      statistic.map(async (stat) => {
+        const product = await Food.findProduct(stat.foodId).then((result) => {
+          return result;
+        });
+        return { ...stat, ...product };
+      })
+    );
+    res.json(statisticWithFood);
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .send('Il y a eu une erreur lors de la récupération de ces statistiques');
+  }
+});
+
+statisticsRouter.post('/devicesUsed', async (req, res) => {
+  const { statsStartDate, statsEndDate } = req.body;
+
+  try {
+    const statistic = await Statistic.findDevicesByDates({
+      filters: { statsStartDate, statsEndDate },
+    });
     res.json(statistic);
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .send('Il y a eu une erreur lors de la récupération de ces statistiques');
+  }
+});
+
+statisticsRouter.post('/OSUsed', async (req, res) => {
+  const { statsStartDate, statsEndDate } = req.body;
+
+  try {
+    const statistic = await Statistic.findOSByDates({
+      filters: { statsStartDate, statsEndDate },
+    });
+    res.json(statistic);
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .send('Il y a eu une erreur lors de la récupération de ces statistiques');
+  }
+});
+
+// findStatsUsers
+statisticsRouter.post('/usersOrderDesc', async (req, res) => {
+  try {
+    const statistic = await Statistic.findStatsUsers();
+    const statisticWithUserDetails = await Promise.all(
+      statistic.map(async (stat) => {
+        const user = await User.findOneForStats(stat.userId).then((result) => {
+          return result;
+        });
+        return { ...stat, ...user };
+      })
+    );
+
+    res.json(statisticWithUserDetails);
   } catch (err) {
     console.log(err);
     res

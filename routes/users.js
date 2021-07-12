@@ -14,6 +14,25 @@ const {
   CONFIRMED_EMAIL_FRONT_URL,
 } = require('../env');
 
+usersRouter.get('/', requireCurrentUser, async (req, res) => {
+  const { id } = req.currentUser;
+  if (req.currentUser) {
+    try {
+      const UsersData = await User.findAllSafe(id);
+      return res.json(UsersData);
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .send(
+          'Il y a eu une erreur lors de la récupération de la liste des utilisateurs'
+        );
+    }
+  } else {
+    return res.json([]);
+  }
+});
+
 usersRouter.post('/', async (req, res) => {
   const validationError = User.validate(req.body);
   if (validationError)

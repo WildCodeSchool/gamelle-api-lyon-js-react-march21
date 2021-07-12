@@ -41,6 +41,30 @@ const hashingOptions = {
 
 const findOne = (id) => db.user.findUnique({ where: { id: parseInt(id, 10) } });
 
+const findAllSafe = () =>
+  db.user.findMany({
+    select: {
+      id: true,
+      firstname: true,
+      lastname: true,
+      email: true,
+      role: true,
+      registeredAt: true,
+    },
+  });
+
+const findOneForStats = (id) =>
+  db.user.findUnique({
+    select: {
+      firstname: true,
+      lastname: true,
+      email: true,
+      role: true,
+      registeredAt: true,
+    },
+    where: { id: parseInt(id, 10) },
+  });
+
 const { findMany } = db.user;
 
 // ---------Creation d'une fonction pour hacher le mdp--------- //
@@ -216,4 +240,6 @@ module.exports = {
   googleCreate,
   findByFacebookId,
   facebookCreate,
+  findOneForStats,
+  findAllSafe,
 };
