@@ -64,7 +64,10 @@ statisticsRouter.post('/', deviceDetails, async (req, res) => {
 });
 
 statisticsRouter.get('/', requireCurrentUser, async (req, res) => {
-  if (req.currentUser && req.currentUser.role === 'admin') {
+  if (
+    req.currentUser &&
+    (req.currentUser.role === 'admin' || req.currentUser.role === 'superAdmin')
+  ) {
     try {
       const statisticsData = await Statistic.findAllStatistics();
       return res.json(statisticsData);
@@ -82,7 +85,10 @@ statisticsRouter.get('/', requireCurrentUser, async (req, res) => {
 
 statisticsRouter.post('/fullReqDates', requireCurrentUser, async (req, res) => {
   const { statsStartDate, statsEndDate } = req.body;
-  if (req.currentUser && req.currentUser.role === 'admin') {
+  if (
+    req.currentUser &&
+    (req.currentUser.role === 'admin' || req.currentUser.role === 'superAdmin')
+  ) {
     try {
       const statistic = await Statistic.findStatsByDates({
         filters: { statsStartDate, statsEndDate },
@@ -104,7 +110,11 @@ statisticsRouter.post(
   requireCurrentUser,
   async (req, res) => {
     const { statsStartDate, statsEndDate } = req.body;
-    if (req.currentUser && req.currentUser.role === 'admin') {
+    if (
+      req.currentUser &&
+      (req.currentUser.role === 'admin' ||
+        req.currentUser.role === 'superAdmin')
+    ) {
       try {
         const statistic = await Statistic.findNbReqByDates({
           filters: { statsStartDate, statsEndDate },
@@ -127,7 +137,11 @@ statisticsRouter.post(
   requireCurrentUser,
   async (req, res) => {
     const { statsStartDate, statsEndDate } = req.body;
-    if (req.currentUser && req.currentUser.role === 'admin') {
+    if (
+      req.currentUser &&
+      (req.currentUser.role === 'admin' ||
+        req.currentUser.role === 'superAdmin')
+    ) {
       try {
         const statistic = await Statistic.findNbFoodTypesByDates({
           filters: { statsStartDate, statsEndDate },
@@ -161,7 +175,11 @@ statisticsRouter.post(
   requireCurrentUser,
   async (req, res) => {
     const { statsStartDate, statsEndDate } = req.body;
-    if (req.currentUser && req.currentUser.role === 'admin') {
+    if (
+      req.currentUser &&
+      (req.currentUser.role === 'admin' ||
+        req.currentUser.role === 'superAdmin')
+    ) {
       try {
         const statistic = await Statistic.findAnimalCategoriesByDates({
           filters: { statsStartDate, statsEndDate },
@@ -194,7 +212,11 @@ statisticsRouter.post(
   requireCurrentUser,
   async (req, res) => {
     const { statsStartDate, statsEndDate } = req.body;
-    if (req.currentUser && req.currentUser.role === 'admin') {
+    if (
+      req.currentUser &&
+      (req.currentUser.role === 'admin' ||
+        req.currentUser.role === 'superAdmin')
+    ) {
       try {
         const statistic = await Statistic.findMostShowedProductsByDates({
           filters: { statsStartDate, statsEndDate },
@@ -227,7 +249,11 @@ statisticsRouter.post(
   '/currentMostFavoriteProducts',
   requireCurrentUser,
   async (req, res) => {
-    if (req.currentUser && req.currentUser.role === 'admin') {
+    if (
+      req.currentUser &&
+      (req.currentUser.role === 'admin' ||
+        req.currentUser.role === 'superAdmin')
+    ) {
       try {
         const statistic = await Statistic.findCurrentMostFavoriteProducts();
 
@@ -256,7 +282,10 @@ statisticsRouter.post(
 
 statisticsRouter.post('/devicesUsed', requireCurrentUser, async (req, res) => {
   const { statsStartDate, statsEndDate } = req.body;
-  if (req.currentUser && req.currentUser.role === 'admin') {
+  if (
+    req.currentUser &&
+    (req.currentUser.role === 'admin' || req.currentUser.role === 'superAdmin')
+  ) {
     try {
       const statistic = await Statistic.findDevicesByDates({
         filters: { statsStartDate, statsEndDate },
@@ -275,7 +304,10 @@ statisticsRouter.post('/devicesUsed', requireCurrentUser, async (req, res) => {
 
 statisticsRouter.post('/OSUsed', requireCurrentUser, async (req, res) => {
   const { statsStartDate, statsEndDate } = req.body;
-  if (req.currentUser && req.currentUser.role === 'admin') {
+  if (
+    req.currentUser &&
+    (req.currentUser.role === 'admin' || req.currentUser.role === 'superAdmin')
+  ) {
     try {
       const statistic = await Statistic.findOSByDates({
         filters: { statsStartDate, statsEndDate },
@@ -297,7 +329,11 @@ statisticsRouter.post(
   '/usersOrderDesc',
   requireCurrentUser,
   async (req, res) => {
-    if (req.currentUser && req.currentUser.role === 'admin') {
+    if (
+      req.currentUser &&
+      (req.currentUser.role === 'admin' ||
+        req.currentUser.role === 'superAdmin')
+    ) {
       try {
         const statistic = await Statistic.findStatsUsers();
         const statisticWithUserDetails = await Promise.all(

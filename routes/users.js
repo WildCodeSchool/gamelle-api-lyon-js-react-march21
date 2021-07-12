@@ -35,7 +35,7 @@ usersRouter.get('/', requireCurrentUser, async (req, res) => {
 
 usersRouter.post('/updateRole', requireCurrentUser, async (req, res) => {
   const { id, role } = req.body;
-  if (req.currentUser) {
+  if (req.currentUser && req.currentUser.role === 'superAdmin') {
     try {
       await User.changeUserRole({ id, role });
       return res.sendStatus(200);
