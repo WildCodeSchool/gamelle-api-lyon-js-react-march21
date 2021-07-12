@@ -162,4 +162,5 @@ model Rating {
   Users     User @relation(fields: [userId], references: [id])
   foodId    Int
   foods     Food @relation(fields: [foodId], references: [id])
+
 }
