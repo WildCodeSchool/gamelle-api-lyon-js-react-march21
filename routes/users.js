@@ -61,7 +61,7 @@ usersRouter.post('/', async (req, res) => {
   if (req.body.phone && (await User.phoneAlreadyExist(req.body.phone)))
     return res
       .status(422)
-      .send({ error: 'This phone number is already taken  !' });
+      .send({ error: 'This phone number is already taken !' });
   const newUser = await User.create(req.body);
   if (newUser && (await User.findByEmail(req.body.email))) {
     const token = uniqid();
