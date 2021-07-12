@@ -19,6 +19,8 @@ RatingsRouter.post(
         userId: id,
         foodId,
       });
+      console.log('foodId', foodId);
+      console.log('appetance   ', appetance);
       res.status(200).send(newRating);
     } catch (error) {
       console.log(error);

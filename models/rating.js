@@ -12,12 +12,9 @@ const createRat = async ({ userId, foodId, appetance, selle, digestion }) => {
   });
 };
 
-const findOneRating = (id) => db.rating.findMany({ where: { foodId: id } });
-
-const { findMany } = db.rating;
+const findOneRating = (foodId) => db.rating.findMany({ where: { foodId } });
 
 module.exports = {
   createRat,
-  findMany,
   findOneRating,
 };
