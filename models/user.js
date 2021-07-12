@@ -27,18 +27,6 @@ const hashingOptions = {
   type: argon2.argon2id,
 };
 
-// ---------Creation d'une fonction pour trouver un utilisateur par son id unique--------- //
-// const findOne = async (id) => {
-//   const tempProfile = await db.user.findUnique({
-//     where: { id: parseInt(id, 10) },
-//   });
-//   const favs = await db.favorite.findMany({
-//     where: { userId: parseInt(id, 10) },
-//   });
-//   const favsArray = favs.map((fav) => [fav.id, fav.foodId]);
-//   return { ...tempProfile, favorites: favsArray };
-// };
-
 const findOne = (id) => db.user.findUnique({ where: { id: parseInt(id, 10) } });
 
 const findAllSafe = () =>
@@ -53,6 +41,17 @@ const findAllSafe = () =>
     },
   });
 
+const changeUserRole = ({ id, role }) => {
+  return db.user.update({
+    where: {
+      id,
+    },
+    data: {
+      role,
+    },
+  });
+};
+
 const findOneForStats = (id) =>
   db.user.findUnique({
     select: {
@@ -65,7 +64,7 @@ const findOneForStats = (id) =>
     where: { id: parseInt(id, 10) },
   });
 
-const { findMany } = db.user;
+// const { findMany } = db.user;
 
 // ---------Creation d'une fonction pour hacher le mdp--------- //
 const hashPassword = (plainPassword) => {
@@ -232,7 +231,7 @@ module.exports = {
   verifyPassword,
   validate,
   findOne,
-  findMany,
+  // findMany,
   update,
   getSafeAttributes,
   destroy,
@@ -242,4 +241,5 @@ module.exports = {
   facebookCreate,
   findOneForStats,
   findAllSafe,
+  changeUserRole,
 };

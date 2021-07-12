@@ -33,6 +33,25 @@ usersRouter.get('/', requireCurrentUser, async (req, res) => {
   }
 });
 
+usersRouter.post('/updateRole', requireCurrentUser, async (req, res) => {
+  const { id, role } = req.body;
+  if (req.currentUser) {
+    try {
+      await User.changeUserRole({ id, role });
+      return res.sendStatus(200);
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .send(
+          "Il y a eu une erreur lors de la mise à jour du rôle de l'utilisateur"
+        );
+    }
+  } else {
+    return res.json([]);
+  }
+});
+
 usersRouter.post('/', async (req, res) => {
   const validationError = User.validate(req.body);
   if (validationError)
