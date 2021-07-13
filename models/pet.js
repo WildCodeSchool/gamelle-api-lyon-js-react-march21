@@ -27,6 +27,24 @@ const findAnimalCategories = () => {
   });
 };
 
+// ---------Creation d'une fonction validation avec Joi--------- //
+const validate = (data, forUpdate = false) =>
+  Joi.object({
+    image: Joi.string().max(255).allow(null, ''),
+    name: Joi.string()
+      .min(1)
+      .max(255)
+      .presence(forUpdate ? 'optional' : 'required'),
+  }).validate(data, { abortEarly: false }).error;
+
+const createPet = async ({
+  filters: { ownerId, image, name, breedId, animalCategoryId },
+}) => {
+  return db.animal.create({
+    data: { ownerId, image, name, breedId, animalCategoryId },
+  });
+};
+
 // ---------Creation d'une fonction pour mettre à jour les données de l'animal--------- //
 // const update = async (id, data) =>
 //   db.animal.update({
@@ -40,16 +58,6 @@ const findAnimalCategories = () => {
 //     },
 //   });
 
-// ---------Creation d'une fonction validation avec Joi--------- //
-const validate = (data, forUpdate = false) =>
-  Joi.object({
-    image: Joi.string().max(255).allow(null, ''),
-    name: Joi.string()
-      .min(1)
-      .max(255)
-      .presence(forUpdate ? 'optional' : 'required'),
-  }).validate(data, { abortEarly: false }).error;
-
 // const getSafeAttributes = (pet) => {
 //   let { image } = pet;
 //   if (image && !image.startsWith('http://') && !image.startsWith('https://')) {
@@ -59,19 +67,6 @@ const validate = (data, forUpdate = false) =>
 //     ...image,
 //   };
 // };
-
-const createPet = async ({
-  petId,
-  ownerId,
-  image,
-  name,
-  breedId,
-  animalCategoryId,
-}) => {
-  return db.animal.createPet({
-    data: { petId, ownerId, image, name, breedId, animalCategoryId },
-  });
-};
 
 // const destroy = (id) =>
 //   db.animal

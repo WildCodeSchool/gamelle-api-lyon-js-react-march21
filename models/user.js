@@ -39,7 +39,11 @@ const hashingOptions = {
 //   return { ...tempProfile, favorites: favsArray };
 // };
 
-const findOne = (id) => db.user.findUnique({ where: { id: parseInt(id, 10) } });
+const findOne = (id) =>
+  db.user.findUnique({
+    where: { id: parseInt(id, 10) },
+    include: { Animals: { include: { AnimalCategories: true, Breeds: true } } },
+  });
 
 const { findMany } = db.user;
 

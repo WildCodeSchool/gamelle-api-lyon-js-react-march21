@@ -1,9 +1,9 @@
 // const _ = require('lodash');
 const petsRouter = require('express').Router();
 // const expressAsyncHandler = require('express-async-handler');
-// const requireCurrentPet = require('../middlewares/requireCurrentPet');
 // const handleImageUpload = require('../middlewares/handleImageUpload');
 const Pet = require('../models/pet');
+const requireCurrentUser = require('../middlewares/requireCurrentUser');
 // const { ValidationError, RecordNotFoundError } = require('../error-types');
 // const tryDeleteFile = require('../helpers/tryDeleteFile');
 
@@ -40,19 +40,17 @@ petsRouter.get('/', async (req, res) => {
   return res.json(dataToPets);
 });
 
-petsRouter.post('/', (req, res) => {
+petsRouter.post('/', requireCurrentUser, (req, res) => {
   const { id } = req.currentUser;
   const { image, name, breedId, animalCategoryId } = req.body;
-  const ownerId = parseInt(req.params.ownerId, 10);
 
   return Pet.createPet({
     filters: {
       image,
       name,
-      breedId: breedId || undefined,
-      animalCategoryId: animalCategoryId || undefined,
-      animalId: id || undefined,
-      ownerId: ownerId || undefined,
+      breedId: parseInt(breedId, 10),
+      animalCategoryId: parseInt(animalCategoryId, 10),
+      ownerId: id,
     },
   })
     .then((products) => {
