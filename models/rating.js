@@ -21,7 +21,17 @@ const createRat = async ({ userId, foodId, appetance, selle, digestion }) => {
   });
 };
 
-const findOneRating = (foodId) => db.rating.findMany({ where: { foodId } });
+const findOneRating = (foodId) =>
+  db.rating.aggregate({
+    _avg: {
+      selle: true,
+      appetance: true,
+      digestion: true,
+    },
+    where: {
+      foodId,
+    },
+  });
 
 module.exports = {
   createRat,

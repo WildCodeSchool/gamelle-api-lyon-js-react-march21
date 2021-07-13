@@ -1,3 +1,4 @@
+/* eslint-disable dot-notation */
 const RatingsRouter = require('express').Router();
 const asyncHandler = require('express-async-handler');
 const Rating = require('../models/rating');
@@ -33,7 +34,16 @@ RatingsRouter.get(
     const foodId = parseInt(req.params.foodId, 10);
     try {
       const allRating = await Rating.findOneRating(foodId);
-      res.status(200).send(allRating);
+      res.status(200).send({
+        ...allRating,
+        ratingMean: Math.floor(
+          (allRating['_avg'].digestion +
+            allRating['_avg'].selle +
+            allRating['_avg'].appetance) /
+            3
+        ),
+        foodId,
+      });
     } catch (error) {
       console.log(error);
       res.status(500).send(error);
