@@ -14,6 +14,44 @@ const {
   CONFIRMED_EMAIL_FRONT_URL,
 } = require('../env');
 
+usersRouter.get('/', requireCurrentUser, async (req, res) => {
+  const { id } = req.currentUser;
+  if (req.currentUser) {
+    try {
+      const UsersData = await User.findAllSafe(id);
+      return res.json(UsersData);
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .send(
+          'Il y a eu une erreur lors de la récupération de la liste des utilisateurs'
+        );
+    }
+  } else {
+    return res.json([]);
+  }
+});
+
+usersRouter.post('/updateRole', requireCurrentUser, async (req, res) => {
+  const { id, role } = req.body;
+  if (req.currentUser && req.currentUser.role === 'superAdmin') {
+    try {
+      await User.changeUserRole({ id, role });
+      return res.sendStatus(200);
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .send(
+          "Il y a eu une erreur lors de la mise à jour du rôle de l'utilisateur"
+        );
+    }
+  } else {
+    return res.json([]);
+  }
+});
+
 usersRouter.post('/', async (req, res) => {
   const validationError = User.validate(req.body);
   if (validationError)
@@ -23,7 +61,7 @@ usersRouter.post('/', async (req, res) => {
   if (req.body.phone && (await User.phoneAlreadyExist(req.body.phone)))
     return res
       .status(422)
-      .send({ error: 'This phone number is already taken  !' });
+      .send({ error: 'This phone number is already taken !' });
   const newUser = await User.create(req.body);
   if (newUser && (await User.findByEmail(req.body.email))) {
     const token = uniqid();
@@ -116,7 +154,7 @@ usersRouter.patch(
   requireCurrentUser,
   expressAsyncHandler(async (req, res, next) => {
     if (
-      req.currentUser.role === 'admin' ||
+      req.currentUser.role === 'superAdmin' ||
       req.currentUser.id.toString() === req.params.id
     )
       next();
@@ -128,7 +166,6 @@ usersRouter.patch(
     const oldAvatarUrl = user.avatarUrl;
     if (!user) throw new RecordNotFoundError('users', req.params.id);
     const data = _.omit(req.body, 'avatar');
-
     if (req.file && req.file.path) {
       if (req.body.avatarUrl === '') {
         await tryDeleteFile(req.file.path);
@@ -139,7 +176,6 @@ usersRouter.patch(
 
     const error = User.validate(data, true);
     if (error) throw new ValidationError(error.details);
-
     const updated = await User.update(req.params.id, data);
     if (req.file && req.file.path) {
       await tryDeleteFile(oldAvatarUrl);

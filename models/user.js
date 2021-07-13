@@ -27,25 +27,48 @@ const hashingOptions = {
   type: argon2.argon2id,
 };
 
-// ---------Creation d'une fonction pour trouver un utilisateur par son id unique--------- //
-// const findOne = async (id) => {
-//   const tempProfile = await db.user.findUnique({
-//     where: { id: parseInt(id, 10) },
-//   });
-//   const favs = await db.favorite.findMany({
-//     where: { userId: parseInt(id, 10) },
-//   });
-//   const favsArray = favs.map((fav) => [fav.id, fav.foodId]);
-//   return { ...tempProfile, favorites: favsArray };
-// };
-
 const findOne = (id) =>
   db.user.findUnique({
     where: { id: parseInt(id, 10) },
     include: { Animals: { include: { AnimalCategories: true, Breeds: true } } },
   });
 
-const { findMany } = db.user;
+const findAllSafe = () =>
+  db.user.findMany({
+    select: {
+      id: true,
+      firstname: true,
+      lastname: true,
+      email: true,
+      role: true,
+      registeredAt: true,
+    },
+  });
+
+const changeUserRole = ({ id, role }) => {
+  return db.user.update({
+    where: {
+      id,
+    },
+    data: {
+      role,
+    },
+  });
+};
+
+const findOneForStats = (id) =>
+  db.user.findUnique({
+    select: {
+      firstname: true,
+      lastname: true,
+      email: true,
+      role: true,
+      registeredAt: true,
+    },
+    where: { id: parseInt(id, 10) },
+  });
+
+// const { findMany } = db.user;
 
 // ---------Creation d'une fonction pour hacher le mdp--------- //
 const hashPassword = (plainPassword) => {
@@ -116,7 +139,7 @@ const validate = (data, forUpdate = false) =>
     password: Joi.string()
       .min(8)
       .presence(forUpdate ? 'optional' : 'required'),
-    registeredAt: Joi.date().presence('required'),
+    registeredAt: Joi.date().presence(forUpdate ? 'optional' : 'required'),
     avatarUrl: Joi.string().max(255).allow(null, ''),
     googleId: Joi.string(),
   }).validate(data, { abortEarly: false }).error;
@@ -212,7 +235,7 @@ module.exports = {
   verifyPassword,
   validate,
   findOne,
-  findMany,
+  // findMany,
   update,
   getSafeAttributes,
   destroy,
@@ -220,4 +243,7 @@ module.exports = {
   googleCreate,
   findByFacebookId,
   facebookCreate,
+  findOneForStats,
+  findAllSafe,
+  changeUserRole,
 };
