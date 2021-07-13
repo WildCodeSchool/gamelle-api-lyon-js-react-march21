@@ -154,7 +154,7 @@ usersRouter.patch(
   requireCurrentUser,
   expressAsyncHandler(async (req, res, next) => {
     if (
-      req.currentUser.role === 'admin' ||
+      req.currentUser.role === 'superAdmin' ||
       req.currentUser.id.toString() === req.params.id
     )
       next();
@@ -166,7 +166,6 @@ usersRouter.patch(
     const oldAvatarUrl = user.avatarUrl;
     if (!user) throw new RecordNotFoundError('users', req.params.id);
     const data = _.omit(req.body, 'avatar');
-
     if (req.file && req.file.path) {
       if (req.body.avatarUrl === '') {
         await tryDeleteFile(req.file.path);
@@ -177,7 +176,6 @@ usersRouter.patch(
 
     const error = User.validate(data, true);
     if (error) throw new ValidationError(error.details);
-
     const updated = await User.update(req.params.id, data);
     if (req.file && req.file.path) {
       await tryDeleteFile(oldAvatarUrl);

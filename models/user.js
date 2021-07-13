@@ -135,7 +135,7 @@ const validate = (data, forUpdate = false) =>
     password: Joi.string()
       .min(8)
       .presence(forUpdate ? 'optional' : 'required'),
-    registeredAt: Joi.date().presence('required'),
+    registeredAt: Joi.date().presence(forUpdate ? 'optional' : 'required'),
     avatarUrl: Joi.string().max(255).allow(null, ''),
     googleId: Joi.string(),
   }).validate(data, { abortEarly: false }).error;
