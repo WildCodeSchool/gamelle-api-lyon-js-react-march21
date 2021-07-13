@@ -1,4 +1,3 @@
-/* eslint-disable dot-notation */
 const RatingsRouter = require('express').Router();
 const asyncHandler = require('express-async-handler');
 const Rating = require('../models/rating');
@@ -37,10 +36,7 @@ RatingsRouter.get(
       res.status(200).send({
         ...allRating,
         ratingMean: Math.floor(
-          (allRating['_avg'].digestion +
-            allRating['_avg'].selle +
-            allRating['_avg'].appetance) /
-            3
+          (allRating.digestion + allRating.selle + allRating.appetance) / 3
         ),
         foodId,
       });

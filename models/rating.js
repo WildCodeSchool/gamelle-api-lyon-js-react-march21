@@ -21,8 +21,8 @@ const createRat = async ({ userId, foodId, appetance, selle, digestion }) => {
   });
 };
 
-const findOneRating = (foodId) =>
-  db.rating.aggregate({
+const findOneRating = async (foodId) => {
+  const avgRatings = await db.rating.aggregate({
     _avg: {
       selle: true,
       appetance: true,
@@ -32,6 +32,10 @@ const findOneRating = (foodId) =>
       foodId,
     },
   });
+
+  // eslint-disable-next-line dot-notation
+  return { ...avgRatings['_avg'] };
+};
 
 module.exports = {
   createRat,
