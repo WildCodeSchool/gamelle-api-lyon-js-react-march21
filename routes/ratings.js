@@ -8,7 +8,7 @@ RatingsRouter.post(
   requireCurrentUser,
   asyncHandler(async (req, res) => {
     const { id } = req.currentUser;
-    const { appetance, selle, digestion } = req.body;
+    const { appetance, selle, digestion, reviews } = req.body;
     const foodId = parseInt(req.params.foodId, 10);
 
     try {
@@ -17,6 +17,7 @@ RatingsRouter.post(
         selle,
         digestion,
         userId: id,
+        reviews,
         foodId,
       });
       res.status(200).send(newRating);
@@ -38,6 +39,7 @@ RatingsRouter.get(
         ratingMean: Math.floor(
           (allRating.digestion + allRating.selle + allRating.appetance) / 3
         ),
+
         foodId,
       });
     } catch (error) {
