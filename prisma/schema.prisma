@@ -158,9 +158,10 @@ model Rating {
   selle     Int?
   digestion Int?
   userId    Int
-  Users     User @relation(fields: [userId], references: [id])
+  Users     User    @relation(fields: [userId], references: [id])
   foodId    Int
-  foods     Food @relation(fields: [foodId], references: [id])
+  foods     Food    @relation(fields: [foodId], references: [id])
+  reviews   String? @db.Text
 
   @@id([userId, foodId])
 }
