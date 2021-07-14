@@ -43,7 +43,7 @@ const findOneRating = async (foodId) => {
       foodId,
     },
   });
-  console.log(avgRatings);
+
   // eslint-disable-next-line dot-notation
   return { ...avgRatings['_avg'], count: avgRatings['_count'].foodId };
 };
