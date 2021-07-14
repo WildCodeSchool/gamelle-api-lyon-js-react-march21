@@ -325,7 +325,7 @@ statisticsRouter.post('/OSUsed', requireCurrentUser, async (req, res) => {
 });
 
 // findStatsUsers
-statisticsRouter.post(
+statisticsRouter.get(
   '/usersOrderDesc',
   requireCurrentUser,
   async (req, res) => {

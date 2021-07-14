@@ -1,4 +1,3 @@
-const Joi = require('joi');
 const db = require('../db');
 const { API_BACK } = require('../env');
 
@@ -31,16 +30,6 @@ const findAnimalCategories = () => {
   });
 };
 
-// ---------Creation d'une fonction validation avec Joi--------- //
-const validate = (data, forUpdate = false) =>
-  Joi.object({
-    image: Joi.string().max(255).allow(null, ''),
-    name: Joi.string()
-      .min(1)
-      .max(255)
-      .presence(forUpdate ? 'optional' : 'required'),
-  }).validate(data, { abortEarly: false }).error;
-
 const createPet = async ({
   ownerId,
   image,
@@ -60,17 +49,18 @@ const createPet = async ({
   });
 };
 
-const updatePet = async (id, data) =>
-  db.animal.update({
+const updatePet = async (id, { name, breedId, animalCategoryId, image }) => {
+  return db.animal.update({
     where: { id: parseInt(id, 10) },
     data: {
-      ...data,
+      name,
+      breedId: parseInt(breedId, 10),
+      animalCategoryId: parseInt(animalCategoryId, 10),
       image:
-        typeof data.image === 'string'
-          ? data.image.replace(`${API_BACK}/`, '')
-          : data.image,
+        typeof image === 'string' ? image.replace(`${API_BACK}/`, '') : image,
     },
   });
+};
 
 const findPetFavorites = async (id) => {
   return db.animalFavoriteFood.findMany({
@@ -110,7 +100,6 @@ module.exports = {
   findBreeds,
   findAnimalCategories,
   createPet,
-  validate,
   findOne,
   updatePet,
   findPetFavorites,

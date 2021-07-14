@@ -57,9 +57,6 @@ const findStatsUsers = async () => {
       userId: true,
     },
     distinct: ['userId'],
-    where: {
-      NOT: [{ userId: null }],
-    },
   });
 };
 

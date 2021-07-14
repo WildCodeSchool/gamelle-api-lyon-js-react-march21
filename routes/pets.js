@@ -81,10 +81,8 @@ petsRouter.patch(
   expressAsyncHandler(async (req, res) => {
     const pet = await Pet.findOne(parseInt(req.params.id, 10));
     const oldImage = pet.image;
-
     if (!pet) throw new RecordNotFoundError('pets', req.params.id);
-    const data = _.omit(req.body, 'image');
-
+    const data = _.omit(req.body, 'image', 'id');
     if (req.file && req.file.path) {
       if (req.body.image === '') {
         await tryDeleteFile(req.file.path);
