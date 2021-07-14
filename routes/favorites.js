@@ -25,8 +25,8 @@ favoritesRouter.get('/listfav', requireCurrentUser, async (req, res) => {
   if (req.currentUser) {
     const { id } = req.currentUser;
     try {
-      const FavoriteData = await Favorite.findListOfFavorites(id);
-      return res.json(FavoriteData);
+      const favoriteData = await Favorite.findListOfFavorites(id);
+      return res.json(favoriteData);
     } catch (err) {
       console.log(err);
       return res
