@@ -1,9 +1,13 @@
 const Joi = require('joi');
 const db = require('../db');
-// const { API_BACK } = require('../env');
+const { API_BACK } = require('../env');
 
-// const findOne = (id) => db.animal.findUnique({ where: { id } });
-// const { findMany } = db.animal;
+const findOne = (id) => {
+  return db.animal.findUnique({
+    where: { id },
+    include: { AnimalCategories: true, Breeds: true },
+  });
+};
 
 const findBreeds = () => {
   return db.breed.findMany({
@@ -38,35 +42,62 @@ const validate = (data, forUpdate = false) =>
   }).validate(data, { abortEarly: false }).error;
 
 const createPet = async ({
-  filters: { ownerId, image, name, breedId, animalCategoryId },
+  ownerId,
+  image,
+  name,
+  breedId,
+  animalCategoryId,
 }) => {
   return db.animal.create({
-    data: { ownerId, image, name, breedId, animalCategoryId },
+    data: {
+      ownerId,
+      name,
+      breedId,
+      animalCategoryId,
+      image:
+        typeof image === 'string' ? image.replace(`${API_BACK}/`, '') : image,
+    },
   });
 };
 
-// ---------Creation d'une fonction pour mettre à jour les données de l'animal--------- //
-// const update = async (id, data) =>
-//   db.animal.update({
-//     where: { id: parseInt(id, 10) },
-//     data: {
-//       ...data,
-//       image:
-//         typeof data.image === 'string'
-//           ? data.image.replace(`${API_BACK}/`, '')
-//           : data.image,
-//     },
-//   });
+const updatePet = async (id, data) =>
+  db.animal.update({
+    where: { id: parseInt(id, 10) },
+    data: {
+      ...data,
+      image:
+        typeof data.image === 'string'
+          ? data.image.replace(`${API_BACK}/`, '')
+          : data.image,
+    },
+  });
 
-// const getSafeAttributes = (pet) => {
-//   let { image } = pet;
-//   if (image && !image.startsWith('http://') && !image.startsWith('https://')) {
-//     image = `${API_BACK}/${image}`;
-//   }
-//   return {
-//     ...image,
-//   };
-// };
+const findPetFavorites = async (id) => {
+  return db.animalFavoriteFood.findMany({
+    where: {
+      animalId: parseInt(id, 10),
+    },
+    include: {
+      Favorites: { include: { Foods: true } },
+    },
+  });
+};
+
+const addFavorite = async ({ animalId, favoriteId }) => {
+  return db.animalFavoriteFood.create({
+    data: {
+      animalId,
+      favoriteId,
+    },
+  });
+};
+
+const destroyFavorite = (id) => {
+  return db.animalFavoriteFood
+    .delete({ where: { id: parseInt(id, 10) } })
+    .then(() => true)
+    .catch(() => false);
+};
 
 // const destroy = (id) =>
 //   db.animal
@@ -80,9 +111,9 @@ module.exports = {
   findAnimalCategories,
   createPet,
   validate,
-  // findOne,
-  // findMany,
-  // update,
-  // getSafeAttributes,
-  // destroy,
+  findOne,
+  updatePet,
+  findPetFavorites,
+  addFavorite,
+  destroyFavorite,
 };

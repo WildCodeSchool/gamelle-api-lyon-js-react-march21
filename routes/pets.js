@@ -1,11 +1,11 @@
-// const _ = require('lodash');
+const _ = require('lodash');
 const petsRouter = require('express').Router();
-// const expressAsyncHandler = require('express-async-handler');
-// const handleImageUpload = require('../middlewares/handleImageUpload');
+const expressAsyncHandler = require('express-async-handler');
+const handleImageUpload = require('../middlewares/handleImageUpload');
 const Pet = require('../models/pet');
 const requireCurrentUser = require('../middlewares/requireCurrentUser');
-// const { ValidationError, RecordNotFoundError } = require('../error-types');
-// const tryDeleteFile = require('../helpers/tryDeleteFile');
+const { RecordNotFoundError } = require('../error-types');
+const tryDeleteFile = require('../helpers/tryDeleteFile');
 
 petsRouter.get('/', async (req, res) => {
   const dataToPets = [];
@@ -40,127 +40,118 @@ petsRouter.get('/', async (req, res) => {
   return res.json(dataToPets);
 });
 
-petsRouter.post('/', requireCurrentUser, (req, res) => {
-  const { id } = req.currentUser;
-  const { image, name, breedId, animalCategoryId } = req.body;
-
-  return Pet.createPet({
-    filters: {
-      image,
-      name,
-      breedId: parseInt(breedId, 10),
-      animalCategoryId: parseInt(animalCategoryId, 10),
-      ownerId: id,
-    },
-  })
-    .then((products) => {
-      res.json(products);
+petsRouter.get('/:id', async (req, res) => {
+  return Pet.findOne(parseInt(req.params.id, 10))
+    .then((pet) => {
+      res.json(pet);
     })
     .catch((err) => {
       console.log(err);
       res
         .status(500)
-        .send('Il y a eu une erreur lors de la récupération des produits');
+        .send('Il y a eu une erreur lors de la récupération de cet animal');
     });
 });
 
-petsRouter.post('/', async (req, res) => {
-  const validationError = Pet.validate(req.body);
-  if (validationError)
-    return res.status(422).send({ errors: validationError.details });
+petsRouter.post('/', requireCurrentUser, async (req, res) => {
+  const ownerId = req.currentUser.id;
+  const { image, name, breedId, animalCategoryId } = req.body;
 
-  const newPet = await Pet.create(req.body);
-
-  return res.status(201).send(Pet.getSafeAttributes(newPet));
+  return Pet.createPet({
+    image,
+    name,
+    breedId: parseInt(breedId, 10),
+    animalCategoryId: parseInt(animalCategoryId, 10),
+    ownerId,
+  })
+    .then((pet) => {
+      res.json(pet);
+    })
+    .catch((err) => {
+      console.log(err);
+      res
+        .status(500)
+        .send("Il y a eu une erreur lors de l'ajout de cet animal");
+    });
 });
 
-// petsRouter.patch(
-//   '/:id',
-//   requireCurrentPet,
-//   handleImageUpload.single('image'),
-//   expressAsyncHandler(async (req, res) => {
-//     const pet = await Pet.findOne(req.params.id);
-//     const oldImage = pet.image;
-//     if (!pet) throw new RecordNotFoundError('pets', req.params.id);
-//     const data = _.omit(req.body, 'image');
+petsRouter.patch(
+  '/:id',
+  handleImageUpload.single('image'),
+  expressAsyncHandler(async (req, res) => {
+    const pet = await Pet.findOne(parseInt(req.params.id, 10));
+    const oldImage = pet.image;
 
-//     if (req.file && req.file.path) {
-//       if (req.body.image === '') {
-//         await tryDeleteFile(req.file.path);
-//       } else {
-//         data.image = req.file.path;
-//       }
-//     }
+    if (!pet) throw new RecordNotFoundError('pets', req.params.id);
+    const data = _.omit(req.body, 'image');
 
-//     const error = Pet.validate(data, true);
-//     if (error) throw new ValidationError(error.details);
+    if (req.file && req.file.path) {
+      if (req.body.image === '') {
+        await tryDeleteFile(req.file.path);
+      } else {
+        data.image = req.file.path;
+      }
+    }
+    const updated = await Pet.updatePet(req.params.id, data);
+    if (req.file && req.file.path) {
+      await tryDeleteFile(oldImage);
+    }
+    res.send(updated);
+  })
+);
 
-//     const updated = await Pet.update(req.params.id, data);
-//     if (req.file && req.file.path) {
-//       await tryDeleteFile(oldImage);
-//     }
-//     res.send(Pet.getSafeAttributes(updated));
-//   })
-// );
+// destroyFavorite
 
-// petsRouter.post('/:ownerId', requireCurrentPet, async (req, res) => {
-//   const { id } = req.currentPet;
-//   const { image, name, breedId, animalCategoryId } = req.body;
-//   const ownerId = parseInt(req.params.ownerId, 10);
+petsRouter.get('/favorites/:animalId', requireCurrentUser, async (req, res) => {
+  if (req.currentUser) {
+    const { animalId } = req.params;
+    try {
+      const petFav = await Pet.findPetFavorites(animalId);
+      return res.json(petFav);
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .send('Il y a eu une erreur lors de la récupération des favoris');
+    }
+  } else {
+    return res.json([]);
+  }
+});
 
-//   try {
-//     const newPet = await Pet.createPet({
-//       image,
-//       name,
-//       breedId,
-//       animalCategoryId,
-//       animalId: id,
-//       ownerId,
-//     });
-//     res.status(200).send(newPet);
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).send(error);
-//   }
+petsRouter.post('/favorites', async (req, res) => {
+  const { animalId, favoriteId } = req.body;
 
-//   return Pet.createPet({
-//     filters: {
-//       image,
-//       name,
-//       breedId: breedId || undefined,
-//       animalCategoryId: animalCategoryId || undefined,
-//       animalId: id || undefined,
-//       ownerId: ownerId || undefined,
-//     },
-//   })
-//     .then((newPet) => {
-//       res.json(newPet);
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//       res
-//         .status(500)
-//         .send(
-//           "Il y a eu une erreur lors de la récupération des infos de l'animal"
-//         );
-//     });
-// });
+  return Pet.addFavorite({
+    animalId,
+    favoriteId,
+  })
+    .then((fav) => {
+      res.json(fav);
+    })
+    .catch((err) => {
+      console.log(err);
+      res
+        .status(500)
+        .send(
+          "Il y a eu une erreur lors de l'ajout de ce favori pour votre animal"
+        );
+    });
+});
 
-// petsRouter.get('/', requireCurrentPet, async (req, res) => {
-//   const { id } = req.currentPet;
-//   if (req.currentPet) {
-//     try {
-//       const petData = await Pet.findPet(id);
-//       return res.json(petData);
-//     } catch (err) {
-//       console.log(err);
-//       return res
-//         .status(500)
-//         .send("Il y a eu une erreur lors de la récupération de l'animal");
-//     }
-//   } else {
-//     return res.json([]);
-//   }
-// });
+petsRouter.delete('/favorites/:id', async (req, res) => {
+  return Pet.destroyFavorite(req.params.id)
+    .then((fav) => {
+      res.json(fav);
+    })
+    .catch((err) => {
+      console.log(err);
+      res
+        .status(500)
+        .send(
+          'Il y a eu une erreur lors de la suppression de ce favori pour votre animal'
+        );
+    });
+});
 
 module.exports = petsRouter;
