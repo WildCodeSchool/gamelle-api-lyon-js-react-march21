@@ -1,9 +1,5 @@
 const Joi = require('joi');
 const db = require('../db');
-// const { API_BACK } = require('../env');
-
-// const findOne = (id) => db.animal.findUnique({ where: { id } });
-// const { findMany } = db.animal;
 
 const findBreeds = () => {
   return db.breed.findMany({
@@ -45,44 +41,9 @@ const createPet = async ({
   });
 };
 
-// ---------Creation d'une fonction pour mettre à jour les données de l'animal--------- //
-// const update = async (id, data) =>
-//   db.animal.update({
-//     where: { id: parseInt(id, 10) },
-//     data: {
-//       ...data,
-//       image:
-//         typeof data.image === 'string'
-//           ? data.image.replace(`${API_BACK}/`, '')
-//           : data.image,
-//     },
-//   });
-
-// const getSafeAttributes = (pet) => {
-//   let { image } = pet;
-//   if (image && !image.startsWith('http://') && !image.startsWith('https://')) {
-//     image = `${API_BACK}/${image}`;
-//   }
-//   return {
-//     ...image,
-//   };
-// };
-
-// const destroy = (id) =>
-//   db.animal
-//     .delete({ where: { id: parseInt(id, 10) } })
-
-//     .then(() => true)
-//     .catch(() => false);
-
 module.exports = {
   findBreeds,
   findAnimalCategories,
   createPet,
   validate,
-  // findOne,
-  // findMany,
-  // update,
-  // getSafeAttributes,
-  // destroy,
 };
