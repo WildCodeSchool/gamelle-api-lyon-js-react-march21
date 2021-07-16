@@ -66,7 +66,7 @@ authRouter.get(
   '/google/callback',
   asyncHandler(async (req, res, next) => {
     passport.authenticate('google', {
-      successRedirect: `${URL_FRONT}/profile`,
+      successRedirect: `${URL_FRONT}/`,
       failureRedirect: `${URL_FRONT}/sign-up`,
     })(req, res, next);
   })
@@ -86,7 +86,7 @@ authRouter.get(
   '/facebook/callback',
   asyncHandler(async (req, res, next) => {
     passport.authenticate('facebook', {
-      successRedirect: `${URL_FRONT}/profile`,
+      successRedirect: `${URL_FRONT}/`,
       failureRedirect: `${URL_FRONT}/sign-up`,
     })(req, res, next);
   })

@@ -1,5 +1,12 @@
 const db = require('../db');
 
+const pagination = ({ limit, offset }) => {
+  const take = parseInt(limit, 10);
+  const skip = parseInt(offset, 10);
+
+  return Promise.all([db.food.findMany({ take, skip }), db.food.count()]);
+};
+
 const findBrands = () => {
   return db.food.findMany({
     // take: 10,
@@ -63,4 +70,10 @@ const findProducts = async ({
   });
 };
 
-module.exports = { findProducts, findBrands, findTypes, findAnimalCategories };
+module.exports = {
+  findProducts,
+  findBrands,
+  findTypes,
+  findAnimalCategories,
+  pagination,
+};
