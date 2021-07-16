@@ -18,4 +18,29 @@ const findDetails = async (barcode) => {
     .then((response) => response.data.data);
 };
 
-module.exports = { findProduct, findDetails };
+const findFoodTypeName = async (id) => {
+  const idInt = parseInt(id, 10);
+  const product = await db.foodType.findUnique({
+    where: {
+      id: idInt,
+    },
+  });
+  return product;
+};
+
+const findAnimalCategoryName = async (id) => {
+  const idInt = parseInt(id, 10);
+  const product = await db.animalCategory.findUnique({
+    where: {
+      id: idInt,
+    },
+  });
+  return product;
+};
+
+module.exports = {
+  findProduct,
+  findDetails,
+  findFoodTypeName,
+  findAnimalCategoryName,
+};

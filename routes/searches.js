@@ -3,7 +3,6 @@ const Search = require('../models/search');
 
 searchesRouter.get('/', async (req, res) => {
   const dataToSearches = [];
-
   await Search.findBrands()
     .then((results) => {
       dataToSearches.push(results);

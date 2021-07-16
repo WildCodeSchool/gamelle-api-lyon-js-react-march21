@@ -35,7 +35,7 @@ const findListOfFavorites = async (id) => {
 
 const destroy = ({ userId, foodId }) =>
   db.favorite
-    .deleteMany({ where: { userId, foodId } })
+    .deleteMany({ where: { AND: { userId, foodId } } })
     .then(() => true)
     .catch(() => false);
 
