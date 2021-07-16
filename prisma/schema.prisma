@@ -148,10 +148,11 @@ model Rating {
   selle     Int?
   digestion Int?
   userId    Int
-  Users     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Users     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   foodId    Int
-  foods     Food    @relation(fields: [foodId], references: [id])
-  reviews   String? @db.Text
+  foods     Food     @relation(fields: [foodId], references: [id])
+  reviews   String?  @db.Text
+  postedAt  DateTime
 
   @@id([userId, foodId])
 }

@@ -7,6 +7,7 @@ const createRat = async ({
   selle,
   digestion,
   reviews,
+  postedAt,
 }) => {
   const pk = {
     userId: parseInt(userId, 10),
@@ -17,7 +18,7 @@ const createRat = async ({
     where: {
       userId_foodId: pk,
     },
-    update: { appetance, selle, digestion, reviews },
+    update: { appetance, selle, digestion, reviews, postedAt },
     create: {
       userId,
       foodId,
@@ -25,6 +26,7 @@ const createRat = async ({
       selle,
       digestion,
       reviews,
+      postedAt,
     },
   });
 };
