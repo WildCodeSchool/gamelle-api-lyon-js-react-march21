@@ -8,7 +8,7 @@ RatingsRouter.post(
   requireCurrentUser,
   asyncHandler(async (req, res) => {
     const { id } = req.currentUser;
-    const { appetance, selle, digestion, reviews } = req.body;
+    const { appetance, selle, digestion, reviews, postedAt } = req.body;
     const foodId = parseInt(req.params.foodId, 10);
 
     try {
@@ -19,6 +19,7 @@ RatingsRouter.post(
         userId: id,
         reviews,
         foodId,
+        postedAt,
       });
       res.status(200).send(newRating);
     } catch (error) {
