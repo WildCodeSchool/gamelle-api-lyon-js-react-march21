@@ -89,12 +89,11 @@ const destroyFavorite = (id) => {
     .catch(() => false);
 };
 
-// const destroy = (id) =>
-//   db.animal
-//     .delete({ where: { id: parseInt(id, 10) } })
-
-//     .then(() => true)
-//     .catch(() => false);
+const destroy = (id) =>
+  db.animal
+    .delete({ where: { id: parseInt(id, 10) } })
+    .then(() => true)
+    .catch(() => false);
 
 module.exports = {
   findBreeds,
@@ -105,4 +104,5 @@ module.exports = {
   findPetFavorites,
   addFavorite,
   destroyFavorite,
+  destroy,
 };

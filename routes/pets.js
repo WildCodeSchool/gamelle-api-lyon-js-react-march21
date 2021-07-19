@@ -98,8 +98,6 @@ petsRouter.patch(
   })
 );
 
-// destroyFavorite
-
 petsRouter.get('/favorites/:animalId', requireCurrentUser, async (req, res) => {
   if (req.currentUser) {
     const { animalId } = req.params;
@@ -149,6 +147,19 @@ petsRouter.delete('/favorites/:id', async (req, res) => {
         .send(
           'Il y a eu une erreur lors de la suppression de ce favori pour votre animal'
         );
+    });
+});
+
+petsRouter.delete('/:id', async (req, res) => {
+  return Pet.destroy(req.params.id)
+    .then((pet) => {
+      res.json(pet);
+    })
+    .catch((err) => {
+      console.log(err);
+      res
+        .status(500)
+        .send('Il y a eu une erreur lors de la suppression de cet animal');
     });
 });
 
