@@ -30,7 +30,10 @@ const hashingOptions = {
 const findOne = async (id) => {
   const curUser = await db.user.findUnique({
     where: { id: parseInt(id, 10) },
-    include: { Animals: { include: { AnimalCategories: true, Breeds: true } } },
+    include: {
+      Animals: { include: { AnimalCategories: true, Breeds: true } },
+      Rating: { include: { foods: true } },
+    },
   });
   let updatedAnimals;
   if (curUser && curUser.Animals) {
@@ -51,6 +54,7 @@ const findOne = async (id) => {
       })
     );
   }
+
   return { ...curUser, Animals: updatedAnimals };
 };
 
