@@ -65,10 +65,6 @@ petsRouter.post(
       avatarUrl = req.file.path;
     }
 
-    console.log('avatarUrl', avatarUrl);
-    console.log(req);
-    console.log(req.file);
-    console.log(req.file.path);
     return Pet.createPet({
       avatarUrl,
       name,

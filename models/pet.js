@@ -1,11 +1,27 @@
 const db = require('../db');
 const { API_BACK } = require('../env');
 
-const findOne = (id) => {
-  return db.animal.findUnique({
+const findOne = async(id) => {
+  const pet = await db.animal.findUnique({
     where: { id },
     include: { AnimalCategories: true, Breeds: true },
   });
+
+  if (pet) {
+    let { avatarUrl } = pet;
+    if (
+      avatarUrl &&
+      !avatarUrl.startsWith('http://') &&
+      !avatarUrl.startsWith('https://')
+    ) {
+      avatarUrl = `${API_BACK}/${avatarUrl}`;
+    }
+    return {
+      ...pet,
+      avatarUrl,
+    };
+  }
+  return {};
 };
 
 const findBreeds = () => {
