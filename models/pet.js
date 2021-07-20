@@ -32,7 +32,7 @@ const findAnimalCategories = () => {
 
 const createPet = async ({
   ownerId,
-  image,
+  avatarUrl,
   name,
   breedId,
   animalCategoryId,
@@ -43,21 +43,28 @@ const createPet = async ({
       name,
       breedId,
       animalCategoryId,
-      image:
-        typeof image === 'string' ? image.replace(`${API_BACK}/`, '') : image,
+      avatarUrl:
+        typeof avatarUrl === 'string'
+          ? avatarUrl.replace(`${API_BACK}/`, '')
+          : avatarUrl,
     },
   });
 };
 
-const updatePet = async (id, { name, breedId, animalCategoryId, image }) => {
+const updatePet = async (
+  id,
+  { name, breedId, animalCategoryId, avatarUrl }
+) => {
   return db.animal.update({
     where: { id: parseInt(id, 10) },
     data: {
       name,
       breedId: parseInt(breedId, 10),
       animalCategoryId: parseInt(animalCategoryId, 10),
-      image:
-        typeof image === 'string' ? image.replace(`${API_BACK}/`, '') : image,
+      avatarUrl:
+        typeof avatarUrl === 'string'
+          ? avatarUrl.replace(`${API_BACK}/`, '')
+          : avatarUrl,
     },
   });
 };
