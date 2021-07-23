@@ -5,5 +5,7 @@
 
 */
 -- AlterTable
-ALTER TABLE `animal` DROP COLUMN `image`,
-    ADD COLUMN `avatarUrl` VARCHAR(255);
+ALTER TABLE
+  `Animal` DROP COLUMN `image`,
+ADD
+  COLUMN `avatarUrl` VARCHAR(255);
