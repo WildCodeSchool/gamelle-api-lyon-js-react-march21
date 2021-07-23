@@ -1,11 +1,27 @@
 const db = require('../db');
 const { API_BACK } = require('../env');
 
-const findOne = (id) => {
-  return db.animal.findUnique({
+const findOne = async(id) => {
+  const pet = await db.animal.findUnique({
     where: { id },
     include: { AnimalCategories: true, Breeds: true },
   });
+
+  if (pet) {
+    let { avatarUrl } = pet;
+    if (
+      avatarUrl &&
+      !avatarUrl.startsWith('http://') &&
+      !avatarUrl.startsWith('https://')
+    ) {
+      avatarUrl = `${API_BACK}/${avatarUrl}`;
+    }
+    return {
+      ...pet,
+      avatarUrl,
+    };
+  }
+  return {};
 };
 
 const findBreeds = () => {
@@ -32,7 +48,7 @@ const findAnimalCategories = () => {
 
 const createPet = async ({
   ownerId,
-  image,
+  avatarUrl,
   name,
   breedId,
   animalCategoryId,
@@ -43,21 +59,28 @@ const createPet = async ({
       name,
       breedId,
       animalCategoryId,
-      image:
-        typeof image === 'string' ? image.replace(`${API_BACK}/`, '') : image,
+      avatarUrl:
+        typeof avatarUrl === 'string'
+          ? avatarUrl.replace(`${API_BACK}/`, '')
+          : avatarUrl,
     },
   });
 };
 
-const updatePet = async (id, { name, breedId, animalCategoryId, image }) => {
+const updatePet = async (
+  id,
+  { name, breedId, animalCategoryId, avatarUrl }
+) => {
   return db.animal.update({
     where: { id: parseInt(id, 10) },
     data: {
       name,
       breedId: parseInt(breedId, 10),
       animalCategoryId: parseInt(animalCategoryId, 10),
-      image:
-        typeof image === 'string' ? image.replace(`${API_BACK}/`, '') : image,
+      avatarUrl:
+        typeof avatarUrl === 'string'
+          ? avatarUrl.replace(`${API_BACK}/`, '')
+          : avatarUrl,
     },
   });
 };
@@ -89,12 +112,11 @@ const destroyFavorite = (id) => {
     .catch(() => false);
 };
 
-// const destroy = (id) =>
-//   db.animal
-//     .delete({ where: { id: parseInt(id, 10) } })
-
-//     .then(() => true)
-//     .catch(() => false);
+const destroy = (id) =>
+  db.animal
+    .delete({ where: { id: parseInt(id, 10) } })
+    .then(() => true)
+    .catch(() => false);
 
 module.exports = {
   findBreeds,
@@ -105,4 +127,5 @@ module.exports = {
   findPetFavorites,
   addFavorite,
   destroyFavorite,
+  destroy,
 };
