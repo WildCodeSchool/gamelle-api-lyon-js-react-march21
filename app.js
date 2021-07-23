@@ -6,7 +6,7 @@ const uniqid = require('uniqid');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
 const LocalStrategy = require('passport-local').Strategy;
-const requestsToAPI = require('./requestsToAPI');
+// const requestsToAPI = require('./requestsToAPI');
 const User = require('./models/user');
 const {
   PORT,
@@ -182,6 +182,6 @@ process.on('beforeExit', () => {
   });
 });
 
-requestsToAPI.gamelleBreedsRequest();
+// requestsToAPI.gamelleBreedsRequest();
 
 module.exports = server;
