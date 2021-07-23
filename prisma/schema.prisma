@@ -81,7 +81,7 @@ model Food {
 model Animal {
   id                  Int                  @id @default(autoincrement())
   name                String               @db.VarChar(255)
-  image               String?              @db.VarChar(255)
+  avatarUrl           String?              @db.VarChar(255)
   ownerId             Int
   Owners              User                 @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   animalCategoryId    Int?

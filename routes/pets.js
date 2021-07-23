@@ -53,52 +53,59 @@ petsRouter.get('/:id', async (req, res) => {
     });
 });
 
-petsRouter.post('/', requireCurrentUser, async (req, res) => {
-  const ownerId = req.currentUser.id;
-  const { image, name, breedId, animalCategoryId } = req.body;
+petsRouter.post(
+  '/',
+  handleImageUpload.single('avatar'),
+  requireCurrentUser,
+  async (req, res) => {
+    const ownerId = req.currentUser.id;
+    const { name, breedId, animalCategoryId } = req.body;
+    let avatarUrl;
+    if (req.file && req.file.path) {
+      avatarUrl = req.file.path;
+    }
 
-  return Pet.createPet({
-    image,
-    name,
-    breedId: parseInt(breedId, 10),
-    animalCategoryId: parseInt(animalCategoryId, 10),
-    ownerId,
-  })
-    .then((pet) => {
-      res.json(pet);
+    return Pet.createPet({
+      avatarUrl,
+      name,
+      breedId: parseInt(breedId, 10),
+      animalCategoryId: parseInt(animalCategoryId, 10),
+      ownerId,
     })
-    .catch((err) => {
-      console.log(err);
-      res
-        .status(500)
-        .send("Il y a eu une erreur lors de l'ajout de cet animal");
-    });
-});
+      .then((pet) => {
+        res.json(pet);
+      })
+      .catch((err) => {
+        console.log(err);
+        res
+          .status(500)
+          .send("Il y a eu une erreur lors de l'ajout de cet animal");
+      });
+  }
+);
 
 petsRouter.patch(
   '/:id',
-  handleImageUpload.single('image'),
+  handleImageUpload.single('avatar'),
   expressAsyncHandler(async (req, res) => {
     const pet = await Pet.findOne(parseInt(req.params.id, 10));
-    const oldImage = pet.image;
+    const oldAvatarUrl = pet.avatarUrl;
     if (!pet) throw new RecordNotFoundError('pets', req.params.id);
-    const data = _.omit(req.body, 'image', 'id');
+    const data = _.omit(req.body, 'avatar', 'id');
     if (req.file && req.file.path) {
-      if (req.body.image === '') {
+      if (req.body.avatarUrl === '') {
         await tryDeleteFile(req.file.path);
       } else {
-        data.image = req.file.path;
+        data.avatarUrl = req.file.path;
       }
     }
     const updated = await Pet.updatePet(req.params.id, data);
     if (req.file && req.file.path) {
-      await tryDeleteFile(oldImage);
+      await tryDeleteFile(oldAvatarUrl);
     }
     res.send(updated);
   })
 );
-
-// destroyFavorite
 
 petsRouter.get('/favorites/:animalId', requireCurrentUser, async (req, res) => {
   if (req.currentUser) {
@@ -149,6 +156,19 @@ petsRouter.delete('/favorites/:id', async (req, res) => {
         .send(
           'Il y a eu une erreur lors de la suppression de ce favori pour votre animal'
         );
+    });
+});
+
+petsRouter.delete('/:id', async (req, res) => {
+  return Pet.destroy(req.params.id)
+    .then((pet) => {
+      res.json(pet);
+    })
+    .catch((err) => {
+      console.log(err);
+      res
+        .status(500)
+        .send('Il y a eu une erreur lors de la suppression de cet animal');
     });
 });
 

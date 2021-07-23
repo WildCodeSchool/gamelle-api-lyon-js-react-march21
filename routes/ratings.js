@@ -37,13 +37,15 @@ RatingsRouter.get(
       const allRating = await Rating.findOneRating(foodId);
       res.status(200).send({
         ...allRating,
-        ratingMean: (
-          Math.floor(
-            ((allRating.digestion + allRating.selle + allRating.appetance) /
-              3) *
-              2
-          ) / 2
-        ).toFixed(1),
+        ratingMean: parseFloat(
+          (
+            Math.floor(
+              ((allRating.digestion + allRating.selle + allRating.appetance) /
+                3) *
+                2
+            ) / 2
+          ).toFixed(1)
+        ),
         foodId,
       });
     } catch (error) {

@@ -27,11 +27,36 @@ const hashingOptions = {
   type: argon2.argon2id,
 };
 
-const findOne = (id) =>
-  db.user.findUnique({
+const findOne = async (id) => {
+  const curUser = await db.user.findUnique({
     where: { id: parseInt(id, 10) },
-    include: { Animals: { include: { AnimalCategories: true, Breeds: true } } },
+    include: {
+      Animals: { include: { AnimalCategories: true, Breeds: true } },
+      Rating: { include: { foods: true } },
+    },
   });
+  let updatedAnimals;
+  if (curUser && curUser.Animals) {
+    updatedAnimals = await Promise.all(
+      curUser.Animals.map((pet) => {
+        let { avatarUrl } = pet;
+        if (
+          avatarUrl &&
+          !avatarUrl.startsWith('http://') &&
+          !avatarUrl.startsWith('https://')
+        ) {
+          avatarUrl = `${API_BACK}/${avatarUrl}`;
+        }
+        return {
+          ...pet,
+          avatarUrl,
+        };
+      })
+    );
+  }
+
+  return { ...curUser, Animals: updatedAnimals };
+};
 
 const findAllSafe = () =>
   db.user.findMany({
